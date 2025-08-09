@@ -242,7 +242,6 @@ async function cambiarCorreo() {
 </script>
 
 <style scoped>
-/* Estilos base similar a RecuperarPassword */
 .change-email-container {
   min-height: calc(100vh - 90px);
   background: linear-gradient(135deg, #f8fbff 0%, #e3f2fd 100%);
@@ -488,7 +487,6 @@ async function cambiarCorreo() {
   border: 1px solid #c8e6c9;
 }
 
-/* Modal */
 .modal-overlay {
   position: fixed;
   top: 0;

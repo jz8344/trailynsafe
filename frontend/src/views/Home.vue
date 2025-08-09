@@ -180,7 +180,7 @@ body {
   align-items: center;
   justify-content: center; 
   text-align: center; 
-  padding: 100px 5% 30px 5%; /* Reducido el padding para mejor proporción */
+  padding: 100px 5% 30px 5%;
   position: relative;
 }
 
@@ -410,11 +410,10 @@ body {
   letter-spacing: 0.5px;
 }
 
-/* Media queries para responsividad */
 @media (max-width: 768px) {
   .banner {
     min-height: 60vh;
-    padding: 120px 5% 30px 5%; /* Reducido el padding excesivo */
+    padding: 120px 5% 30px 5%; 
   }
   
   .banner h1 {
@@ -504,7 +503,7 @@ body {
 @media (max-width: 480px) {
   .banner {
     min-height: 50vh;
-    padding: 100px 5% 25px 5%; /* Reducido para móviles pequeños */
+    padding: 100px 5% 25px 5%;  
   }
   
   .banner h1 {
@@ -582,7 +581,7 @@ body {
 
 @media (max-width: 360px) {
   .banner {
-    padding: 110px 4% 20px 4%; /* Ajustado para pantallas muy pequeñas */
+    padding: 110px 4% 20px 4%;  
     min-height: 45vh;
   }
   

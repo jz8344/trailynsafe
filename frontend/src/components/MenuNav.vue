@@ -29,35 +29,63 @@
         <button @click="openProfile" class="btn btn-primary">Perfil</button>
       </template>
     </div>
-    <div v-if="showProfile && usuario" class="modal-perfil">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h2>Mi perfil</h2>
-          <button @click="closeProfile" class="close-btn">×</button>
+
+    <!-- MODAL DE PERFIL (solo este bloque fue reemplazado) -->
+    <div
+      v-if="showProfile && usuario"
+      class="modal-perfil"
+      @keydown.esc="closeProfile"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="perfil-title"
+      ref="modalRef"
+    >
+      <div class="modal-content simple">
+        <div class="modal-header simple">
+          <h2 id="perfil-title">Mi perfil</h2>
+          <button @click="closeProfile" class="close-btn" aria-label="Cerrar modal">×</button>
         </div>
-        <div class="profile-info">
-          <div class="info-card">
-            <h3>Información personal</h3>
-            <div class="info-row">
-              <span class="info-label">Nombre:</span>
-              <span class="info-value">{{ usuario.nombre }} {{ usuario.apellidos }}</span>
-            </div>
-            <div class="info-row">
-              <span class="info-label">Correo:</span>
-              <span class="info-value">{{ usuario.correo }}</span>
-            </div>
-            <div class="info-row">
-              <span class="info-label">Teléfono:</span>
-              <span class="info-value">{{ usuario.telefono }}</span>
-            </div>
-            <div class="info-row">
-              <span class="info-label">Fecha de registro:</span>
-              <span class="info-value">{{ usuario.fecha_registro }}</span>
-            </div>
-            <router-link to="/editar-perfil" class="btn btn-primary">Editar perfil</router-link>
-          </div>
+        <div class="profile-info simple">
+          <section class="profile-panel" aria-labelledby="panel-personal">
+            <h3 id="panel-personal">Información personal</h3>
+            <ul class="info-modern" role="list">
+              <li class="item">
+                <span class="icon" aria-hidden="true"><i class="bi bi-person-fill"></i></span>
+                <div class="text">
+                  <span class="label">Nombre</span>
+                  <span class="value">{{ usuario.nombre }} {{ usuario.apellidos }}</span>
+                </div>
+              </li>
+
+              <li class="item">
+                <span class="icon" aria-hidden="true"><i class="bi bi-envelope-fill"></i></span>
+                <div class="text">
+                  <span class="label">Correo</span>
+                  <span class="value">{{ usuario.correo }}</span>
+                </div>
+              </li>
+
+              <li class="item">
+                <span class="icon" aria-hidden="true"><i class="bi bi-telephone-fill"></i></span>
+                <div class="text">
+                  <span class="label">Teléfono</span>
+                  <span class="value">{{ usuario.telefono }}</span>
+                </div>
+              </li>
+
+              <li class="item">
+                <span class="icon" aria-hidden="true"><i class="bi bi-calendar-event-fill"></i></span>
+                <div class="text">
+                  <span class="label">Registro</span>
+                  <span class="value">{{ usuario.fecha_registro }}</span>
+                </div>
+              </li>
+            </ul>
+
+            <router-link to="/editar-perfil" class="btn btn-primary action-full">Editar perfil</router-link>
+          </section>
         </div>
-        <div class="modal-footer">
+        <div class="modal-footer simple">
           <button @click="cerrarSesion" class="btn btn-danger">Cerrar sesión</button>
           <button @click="closeProfile" class="btn btn-outline">Cerrar</button>
         </div>
@@ -68,7 +96,7 @@
 
 <script setup>
 import logo from '/img/logo.png';
-import { ref, onMounted, onUnmounted } from 'vue';
+import { ref, onMounted, onUnmounted, watch } from 'vue';
 import axios from 'axios';
 import { useRouter } from 'vue-router';
 import { usuario, logoutUsuario } from '@/store/session.js';
@@ -78,6 +106,9 @@ const showProfile = ref(false);
 const showMobileMenu = ref(false);
 const conexionPerdida = ref(false);
 let sesionIntervalId = null;
+
+// Para que @keydown.esc funcione sobre el contenedor, le damos focus al abrir
+const modalRef = ref(null);
 
 function toggleMobileMenu() {
   showMobileMenu.value = !showMobileMenu.value;
@@ -179,6 +210,18 @@ onMounted(() => {
   // Solo verificar si hay usuario logueado
   if (usuario.value && usuario.value.id) {
     verificarSesionPeriodicamente();
+  }
+});
+
+// Enfocar el modal al abrir para que capte Esc
+watch(showProfile, (open) => {
+  if (open) {
+    requestAnimationFrame(() => {
+      if (modalRef.value && !modalRef.value.hasAttribute('tabindex')) {
+        modalRef.value.setAttribute('tabindex', '-1');
+      }
+      modalRef.value?.focus?.();
+    });
   }
 });
 
@@ -309,95 +352,212 @@ body {
   transform: translateY(-1px);
 }
 
+/* ====== NUEVOS ESTILOS SOLO PARA EL MODAL ====== */
 .modal-perfil {
+  /* colores locales del modal (no globales) */
+  --c-nav-primary: #2196f3;
+  --c-nav-dark: #1565c0;
+
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.85);
+  inset: 0;
+  background: rgba(8, 32, 55, 0.48);
+  backdrop-filter: blur(2px) saturate(150%);
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start;
+  padding: clamp(40px, 6vh, 70px) 24px 48px;
   z-index: 1000;
-  animation: fadeIn 0.3s ease-out;
+  animation: fadeIn .35s ease;
+  overflow-y: auto;
 }
 
 .modal-content {
+  background: linear-gradient(135deg, #ffffff 0%, #f9fbfe 60%, #f2f8ff 100%);
+  border-radius: 22px;
+  width: min(720px, 100%);
+  max-height: none;
+  box-shadow: 0 18px 50px -10px rgba(0,0,0,.45), 0 4px 10px -3px rgba(0,0,0,.35);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-content.simple {
   background: #ffffff;
-  border-radius: 12px;
-  max-width: 600px;
-  width: 90%;
-  max-height: 85vh;
-  overflow-y: auto;
-  box-shadow: 0 4px 20px rgba(13, 71, 161, 0.15);
-  padding: 0;
+  border-radius: 20px;
+  width: min(640px, 100%);
+  box-shadow: 0 10px 40px -8px rgba(0,0,0,.35), 0 0 0 1px rgba(25,118,210,0.08);
+  overflow: hidden;
+}
+
+.modal-content.simple::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 4px;
+  width: 100%;
+  background: linear-gradient(90deg, var(--c-nav-primary), var(--c-nav-dark));
 }
 
 .modal-header {
+  background: linear-gradient(120deg, var(--c-nav-primary), var(--c-nav-dark));
+  color: #fff;
+  padding: 26px 34px 20px;
+  border-radius: 22px 22px 0 0;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 20px 30px;
-  border-bottom: 1px solid #bbdefb;
-  background: #e3f2fd;
-  border-radius: 12px 12px 0 0;
+  position: relative;
+  overflow: hidden;
 }
 
-.modal-header h2 {
-  font-size: 1.8rem;
+.modal-header.simple {
+  background: transparent;
+  padding: 26px 30px 8px;
+  color: #0d2a44;
+}
+
+.modal-header.simple h2 {
+  font-size: 1.35rem;
+  font-weight: 600;
+  letter-spacing: .4px;
   margin: 0;
-  color: #0d47a1;
 }
 
 .close-btn {
-  background: none;
+  background: rgba(255, 255, 255, 0.14);
   border: none;
-  font-size: 1.5rem;
-  color: #1976d2;
+  color: #fff;
+  font-size: 1.3rem;
   cursor: pointer;
-  transition: color 0.2s;
+  padding: 6px 12px;
+  border-radius: 12px;
+  transition: background .3s ease, transform .3s ease;
 }
 
-.close-btn:hover {
-  color: #0d47a1;
+.modal-header.simple .close-btn {
+  color: #1565c0;
+  background: rgba(21, 101, 192, 0.08);
+}
+
+.close-btn:hover, .close-btn:focus {
+  background: rgba(255, 255, 255, 0.28);
+  outline: none;
+}
+
+.modal-header.simple .close-btn:hover, .modal-header.simple .close-btn:focus {
+  background: rgba(21, 101, 192, 0.14);
+}
+
+.close-btn:active {
+  transform: scale(.92);
 }
 
 .profile-info {
-  padding: 30px;
+  padding: 26px 34px 8px;
 }
 
-.info-card {
-  background: #e3f2fd;
-  border-radius: 8px;
-  padding: 20px;
-  margin-bottom: 20px;
+.profile-info.simple {
+  padding: 4px 30px 6px;
 }
 
-.info-card h3 {
-  font-size: 1.3rem;
-  color: #0d47a1;
-  margin: 0 0 15px;
+.profile-panel {
+  background: #f7fbff;
+  border: 1px solid #d8e9f9;
+  border-radius: 16px;
+  padding: 22px 22px 18px;
+  box-shadow: 0 2px 6px -2px rgba(0,0,0,0.08) inset;
 }
 
-.info-row {
+.profile-panel h3 {
+  margin: 0 0 18px;
+  font-size: .9rem;
+  letter-spacing: .8px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #1565c0;
+}
+
+.info-modern {
+  margin: 0 0 20px;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 18px 18px;
+}
+
+.info-modern .item {
+  position: relative;
+  background: linear-gradient(145deg, #ffffff, #f5f9fe 70%);
+  border: 1px solid #e1ecf7;
+  border-radius: 18px;
+  padding: 14px 16px 14px 54px;
+  box-shadow: 0 4px 12px -6px rgba(0,0,0,0.08);
+  transition: box-shadow .35s ease, transform .35s ease, border-color .35s ease;
+  overflow: hidden;
+}
+
+.info-modern .item::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 90% 15%, rgba(25,118,210,0.18), transparent 60%);
+  opacity: .55;
+  pointer-events: none;
+}
+
+.info-modern .item:hover {
+  box-shadow: 0 10px 22px -10px rgba(0,0,0,0.25);
+  transform: translateY(-3px);
+  border-color: #c2def4;
+}
+
+.info-modern .icon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 34px;
+  height: 34px;
   display: flex;
-  justify-content: space-between;
-  margin-bottom: 12px;
-  padding: 8px 0;
-  border-bottom: 1px solid #bbdefb;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  background: linear-gradient(135deg, #2196f3, #1565c0);
+  color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 6px -2px rgba(0,0,0,.35);
 }
 
-.info-label {
+.info-modern .text {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.info-modern .label {
+  font-size: .65rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: #1565c0;
+  opacity: .85;
+}
+
+.info-modern .value {
+  font-size: .85rem;
   font-weight: 600;
-  color: #1976d2;
-  width: 30%;
+  color: #0d2a44;
+  word-break: break-word;
 }
 
-.info-value {
-  color: #0d47a1;
-  width: 70%;
-  text-align: right;
+/* Botón full width dentro del panel */
+.action-full {
+  display: block;
+  width: 100%;
+  text-align: center;
 }
 
 .modal-footer {

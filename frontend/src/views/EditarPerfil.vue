@@ -262,7 +262,6 @@ function goBack() {
 </script>
 
 <style scoped>
-/* Estilos inspirados en RecuperarPassword.vue, pastel y sencillos */
 .editar-perfil-section {
   min-height: calc(100vh - 90px);
   background: linear-gradient(135deg, #f8fbff 0%, #e3f2fd 100%);
@@ -327,7 +326,6 @@ function goBack() {
   line-height: 1.4;
 }
 
-/* Flecha fuera del header centrado */
 .btn-flecha-regresar {
   position: absolute;
   top: 18px;
@@ -584,7 +582,6 @@ function goBack() {
   flex: 1;
 }
 
-/* Alertas */
 .alert {
   padding: 12px 16px;
   border-radius: 8px;
@@ -607,7 +604,6 @@ function goBack() {
   border: 1px solid #c8e6c9;
 }
 
-/* Animación de carga */
 .spin {
   animation: spin 1s linear infinite;
 }
@@ -628,7 +624,6 @@ function goBack() {
   }
 }
 
-/* Media queries para responsividad */
 @media (max-width: 768px) {
   .editar-perfil-section {
     padding: 20px 15px;

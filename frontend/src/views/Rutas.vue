@@ -74,9 +74,7 @@ function addNotification(message, priority = 'media') {
   const now = new Date().toLocaleTimeString();
   notifications.value.unshift({ time: now, message, priority });
 
-  // Simulación de alerta crítica
   if (priority === 'alta') {
-    // Aquí puedes enviar email o usar Web Notification API
     alert('⚠️ Notificación crítica: ' + message);
   }
 }

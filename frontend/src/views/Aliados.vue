@@ -173,7 +173,6 @@ function closeModal() {
   justify-content: center;
 }
 
-/* Transiciones para las tarjetas */
 .card-fade-enter-active {
   animation: cardSlideUp 0.8s ease-out forwards;
 }
@@ -212,7 +211,6 @@ function closeModal() {
   animation: cardVibrate 0.6s ease-in-out infinite;
 }
 
-/* Animación de vibración para hover */
 @keyframes cardVibrate {
   0%, 100% { transform: translateY(-6px) scale(1.04) rotateY(15deg); }
   25% { transform: translateY(-7px) scale(1.045) rotateY(15.5deg) rotate(0.2deg); }
@@ -239,7 +237,6 @@ function closeModal() {
   font-weight: 600;
 }
 
-/* Transiciones para el modal */
 .modal-fade-enter-active {
   transition: opacity 0.4s ease-out;
 }

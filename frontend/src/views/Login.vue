@@ -24,6 +24,7 @@
           </button>
         </div>
         <button type="submit" class="btn btn-primary" :disabled="loading">
+          <span v-if="loading" class="spin"></span>
           {{ loading ? 'Iniciando sesión...' : 'Iniciar Sesión' }}
         </button>
         <p class="mt-2">
@@ -133,7 +134,7 @@ body {
 .auth-form h2 {
   font-size: 1.8rem;
   margin-bottom: 20px;
-  color: #717501;
+  color: #3582ff;
   text-align: center;
 }
 
@@ -165,6 +166,7 @@ body {
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.3s;
+  position: relative;
 }
 
 .btn-primary {
@@ -221,6 +223,22 @@ body {
   color: #717501;
   display: flex;
   align-items: center;
+}
+
+.btn .spin {
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: 8px;
+  width: 1.1em;
+  height: 1.1em;
+  border: 2.5px solid #fff;
+  border-top: 2.5px solid #009FE3;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }
 
 @media (max-width: 768px) {

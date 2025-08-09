@@ -303,7 +303,6 @@ async function cambiarContrasena() {
 </script>
 
 <style scoped>
-/* Estilos base similar a RecuperarPassword */
 .change-pass-container {
   min-height: calc(100vh - 90px);
   background: linear-gradient(135deg, #f8fbff 0%, #e3f2fd 100%);

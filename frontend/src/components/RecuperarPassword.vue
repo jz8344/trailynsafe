@@ -349,7 +349,6 @@ async function actualizarContrasena() {
 </script>
 
 <style scoped>
-/* Estilos base */
 .recovery-section {
   min-height: calc(100vh - 90px);
   background: linear-gradient(135deg, #f8fbff 0%, #e3f2fd 100%);
@@ -357,7 +356,7 @@ async function actualizarContrasena() {
   justify-content: center;
   align-items: center;
   padding: 30px 20px;
-  padding-top: 120px; /* Espacio para el navbar fijo */
+  padding-top: 120px; 
 }
 
 .recovery-container {
@@ -381,7 +380,6 @@ async function actualizarContrasena() {
   background: linear-gradient(90deg, #4facfe, #00f2fe);
 }
 
-/* Header */
 .recovery-header {
   text-align: center;
   margin-bottom: 30px;
@@ -405,7 +403,6 @@ async function actualizarContrasena() {
   line-height: 1.4;
 }
 
-/* Indicador de progreso */
 .progress-indicator {
   display: flex;
   align-items: center;
@@ -471,7 +468,6 @@ async function actualizarContrasena() {
   background: #4caf50;
 }
 
-/* Formulario */
 .recovery-form {
   margin-bottom: 25px;
 }
@@ -558,7 +554,6 @@ async function actualizarContrasena() {
   display: block;
 }
 
-/* Input group */
 .input-group {
   display: flex;
   gap: 0;
@@ -576,7 +571,6 @@ async function actualizarContrasena() {
   padding: 14px 16px;
 }
 
-/* Indicador de fuerza de contraseña */
 .password-strength {
   margin-top: 8px;
 }
@@ -608,7 +602,6 @@ async function actualizarContrasena() {
 .medium { color: #ff9800; }
 .strong { color: #4caf50; }
 
-/* Botones */
 .btn {
   display: inline-flex;
   align-items: center;
@@ -674,7 +667,6 @@ async function actualizarContrasena() {
   margin-top: 8px;
 }
 
-/* Animación de carga */
 .spin {
   animation: spin 1s linear infinite;
 }
@@ -684,7 +676,6 @@ async function actualizarContrasena() {
   to { transform: rotate(360deg); }
 }
 
-/* Alertas */
 .alert {
   padding: 12px 16px;
   border-radius: 8px;
@@ -708,7 +699,6 @@ async function actualizarContrasena() {
   border: 1px solid #c8e6c9;
 }
 
-/* Footer */
 .recovery-footer {
   text-align: center;
   padding-top: 20px;
@@ -737,7 +727,6 @@ async function actualizarContrasena() {
   color: #1565c0;
 }
 
-/* Animaciones */
 @keyframes fadeInUp {
   from {
     opacity: 0;
@@ -749,7 +738,6 @@ async function actualizarContrasena() {
   }
 }
 
-/* Media queries para responsividad */
 @media (max-width: 768px) {
   .recovery-section {
     padding: 20px 15px;

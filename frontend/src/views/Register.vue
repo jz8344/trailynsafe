@@ -35,6 +35,7 @@
           <span v-if="errors.contrasena" class="error">{{ errors.contrasena[0] }}</span>
         </div>
         <button type="submit" class="btn btn-primary" :disabled="loading">
+          <span v-if="loading" class="spin"></span>
           {{ loading ? 'Registrando...' : 'Registrarte' }}
         </button>
         <div class="auth-links">
@@ -222,6 +223,23 @@ body {
   border-radius: 20px;
   cursor: pointer;
   transition: 0.3s;
+  position: relative;
+}
+
+.btn .spin {
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: 8px;
+  width: 1.1em;
+  height: 1.1em;
+  border: 2.5px solid #fff;
+  border-top: 2.5px solid #009FE3;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }
 
 .btn-primary {

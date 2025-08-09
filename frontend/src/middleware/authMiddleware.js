@@ -32,7 +32,6 @@ export async function validarSesion() {
 }
 
 export function limpiarSesion() {
-  // Limpiar TODO el almacenamiento
   localStorage.clear();
   sessionStorage.clear();
   
