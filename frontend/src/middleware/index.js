@@ -5,3 +5,11 @@ export function auth (to, from, next) {
         next();
     }
 }
+
+export function adminAuth (to, from, next) {
+    if (!localStorage.getItem('admin_token')) {
+        next('/admin/login');
+    } else {
+        next();
+    }
+}

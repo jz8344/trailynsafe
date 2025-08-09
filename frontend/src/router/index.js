@@ -1,7 +1,6 @@
-  import { auth } from '../middleware'; 
+  import { auth, adminAuth } from '../middleware'; 
 import { createRouter, createWebHistory } from 'vue-router';
 import Home from '../views/Home.vue';
-import axios from 'axios';
 
 const routes = [
   {
@@ -43,14 +42,6 @@ const routes = [
      component: () => import('../views/EditarPerfil.vue'),
    },  
    {
-     path: '/multas',
-     name: 'Multas',
-     meta: {
-       middleware: [auth]
-     },
-     component: () => import('../views/Multas.vue')
-   },
-   {
      path: '/notificaciones',
      name: 'Notificaciones',
      meta: {
@@ -80,6 +71,30 @@ const routes = [
      path: '/recuperar-password',
      name: 'RecuperarPassword',
      component: () => import('../components/RecuperarPassword.vue')
+   },
+   
+   // Rutas de Administrador (ocultas del nav)
+   {
+     path: '/admin/login',
+     name: 'AdminLogin',
+     component: () => import('../admin_frontend/AdminLogin.vue')
+   },
+   {
+     path: '/admin/register',
+     name: 'AdminRegister',
+     component: () => import('../admin_frontend/AdminRegister.vue')
+   },
+   {
+     path: '/admin/dashboard',
+     name: 'AdminDashboard',
+     component: () => import('../admin_frontend/AdminDashboard.vue'),
+     meta: { middleware: [adminAuth] }
+   },
+   {
+     path: '/admin/perfil',
+     name: 'AdminPerfil',
+     component: () => import('../admin_frontend/AdminPerfil.vue'),
+     meta: { middleware: [adminAuth] }
    }
 ];
 
@@ -89,25 +104,26 @@ const router = createRouter({
 });
 
 router.beforeEach(async (to, from, next) => {
-  const requiresAuth = to.meta.middleware && to.meta.middleware.some(mw => mw.name === 'auth');
-  if (requiresAuth) {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      next('/login');
-      return;
-    }
-    try {
-      await axios.get('http://127.0.0.1:8000/api/sesion', {
-        headers: { Authorization: 'Bearer ' + token }
+  if (to.meta.middleware) {
+    const middlewares = to.meta.middleware;
+    
+    for (let i = 0; i < middlewares.length; i++) {
+      const middleware = middlewares[i];
+      
+      const result = await new Promise((resolve) => {
+        middleware(to, from, (path) => {
+          resolve(path);
+        });
       });
-      next();
-    } catch (e) {
-      localStorage.removeItem('token');
-      next('/login');
+      
+      if (result && result !== true) {
+        next(result);
+        return;
+      }
     }
-  } else {
-    next();
   }
+  
+  next();
 });
 
 export default router;

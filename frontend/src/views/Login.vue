@@ -1,44 +1,120 @@
 <template>
   <MenuNav />
   <section class="auth-section">
-    <div class="auth-container">
-      <form id="login-form" class="auth-form" @submit.prevent="login">
-        <h2>Iniciar Sesión</h2>
-        <input 
-          v-model="form.correo" 
-          type="email" 
-          placeholder="Correo Electrónico" 
-          required 
-          :disabled="loading"
-        />
-        <div class="input-group password-group">
-          <input
-            v-model="form.contrasena"
-            :type="showPassword ? 'text' : 'password'"
-            placeholder="Contraseña"
-            required
-            :disabled="loading"
-          />
-          <button type="button" class="btn-eye" @click="showPassword = !showPassword">
-            <i :class="showPassword ? 'bi bi-eye-slash' : 'bi bi-eye'" ></i>
-          </button>
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-md-5 col-lg-4">
+          <div class="card shadow-lg border-0 rounded-4">
+            <div class="card-body p-5">
+              <div class="text-center mb-4">
+                <div class="d-inline-flex align-items-center justify-content-center rounded-circle mb-3" 
+                     style="width: 64px; height: 64px; background: linear-gradient(135deg, #009FE3, #3582ff);">
+                  <i class="bi bi-person-circle text-white fs-3"></i>
+                </div>
+                <h2 class="fw-bold text-dark mb-2">Iniciar Sesión</h2>
+                <p class="text-muted">Accede a tu cuenta TrailynSafe</p>
+              </div>
+
+              <form @submit.prevent="login">
+                <div v-if="error" class="alert alert-danger d-flex align-items-center" role="alert">
+                  <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                  {{ error }}
+                </div>
+
+                <div v-if="success" class="alert alert-success d-flex align-items-center" role="alert">
+                  <i class="bi bi-check-circle-fill me-2"></i>
+                  {{ success }}
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label fw-medium">Correo Electrónico</label>
+                  <div class="input-group">
+                    <span class="input-group-text">
+                      <i class="bi bi-envelope"></i>
+                    </span>
+                    <input
+                      v-model="form.correo"
+                      type="email"
+                      class="form-control form-control-lg"
+                      placeholder="correo@ejemplo.com"
+                      required
+                      :disabled="loading"
+                      @input="sanitizeCorreo"
+                      @blur="sanitizeCorreo"
+                    />
+                  </div>
+                </div>
+
+                <div class="mb-4">
+                  <label class="form-label fw-medium">Contraseña</label>
+                  <div class="input-group">
+                    <span class="input-group-text">
+                      <i class="bi bi-lock"></i>
+                    </span>
+                    <input
+                      v-model="form.contrasena"
+                      :type="showPassword ? 'text' : 'password'"
+                      class="form-control form-control-lg"
+                      placeholder="••••••••"
+                      required
+                      :disabled="loading"
+                      @input="sanitizeContrasena"
+                      @blur="sanitizeContrasena"
+                    />
+                    <button 
+                      type="button" 
+                      class="btn btn-outline-secondary"
+                      @click="showPassword = !showPassword"
+                    >
+                      <i :class="showPassword ? 'bi bi-eye-slash' : 'bi bi-eye'"></i>
+                    </button>
+                  </div>
+                </div>
+
+                <button
+                  type="submit"
+                  :disabled="loading"
+                  class="btn btn-lg w-100 text-white fw-medium mb-3"
+                  style="background: linear-gradient(135deg, #009FE3, #3582ff); border: none;"
+                >
+                  <span v-if="loading" class="d-flex align-items-center justify-content-center">
+                    <div class="spinner-border spinner-border-sm me-2" role="status">
+                      <span class="visually-hidden">Loading...</span>
+                    </div>
+                    Iniciando sesión...
+                  </span>
+                  <span v-else class="d-flex align-items-center justify-content-center">
+                    <i class="bi bi-box-arrow-in-right me-2"></i>
+                    Iniciar Sesión
+                  </span>
+                </button>
+
+                <div class="text-center mb-3">
+                  <router-link 
+                    to="/recuperar-password" 
+                    class="text-decoration-none"
+                    style="color: #009FE3;"
+                  >
+                    <i class="bi bi-key me-1"></i>
+                    ¿Olvidaste tu contraseña?
+                  </router-link>
+                </div>
+              </form>
+
+              <div class="text-center">
+                <router-link 
+                  to="/register" 
+                  class="text-decoration-none"
+                  style="color: #3582ff;"
+                >
+                  <i class="bi bi-person-plus me-1"></i>
+                  ¿No tienes cuenta? ¡Regístrate aquí!
+                </router-link>
+              </div>
+            </div>
+          </div>
         </div>
-        <button type="submit" class="btn btn-primary" :disabled="loading">
-          <span v-if="loading" class="spin"></span>
-          {{ loading ? 'Iniciando sesión...' : 'Iniciar Sesión' }}
-        </button>
-        <p class="mt-2">
-          <router-link to="/recuperar-password">¿Olvidaste tu contraseña?</router-link>
-        </p>
-        <div class="auth-links">
-          <span class="auth-text">¿No tienes cuenta?</span>
-          <router-link to="/register" class="auth-link">
-            ¡Regístrate aquí!
-          </router-link>
-        </div>
-        <div v-if="error" class="error-message">{{ error }}</div>
-        <div v-if="success" class="success-message">{{ success }}</div>
-      </form>
+      </div>
     </div>
   </section>
 </template>
@@ -59,6 +135,21 @@ const error = ref('');
 const success = ref('');
 const loading = ref(false);
 const showPassword = ref(false);
+
+// Función para sanitizar entrada de texto
+function sanitizeInput(input) {
+  // Remueve caracteres especiales peligrosos
+  return input.replace(/[<>\/\\}=+,`~|[\]{}]/g, '');
+}
+
+// Funciones de sanitización para el login
+function sanitizeCorreo() {
+  form.correo = sanitizeInput(form.correo);
+}
+
+function sanitizeContrasena() {
+  form.contrasena = sanitizeInput(form.contrasena);
+}
 
 async function login() {
   error.value = '';
@@ -90,12 +181,6 @@ async function login() {
 </script>
 
 <style scoped>
-body {
-  margin: 0;
-  font-family: 'Montserrat', sans-serif;
-  background-color: #111;
-}
-
 .auth-section {
   background: url('../img/school.png') no-repeat center center/cover;
   min-height: 100vh;
@@ -114,136 +199,14 @@ body {
   z-index: 1;
 }
 
-.auth-container {
-  background-color: white;
-  padding: 40px;
-  border-radius: 20px;
-  max-width: 500px;
-  width: 100%;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+.container {
   position: relative;
   z-index: 2;
 }
 
-.auth-form {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-}
-
-.auth-form h2 {
-  font-size: 1.8rem;
-  margin-bottom: 20px;
-  color: #3582ff;
-  text-align: center;
-}
-
-.auth-form input {
-  padding: 12px;
-  border: 1px solid #ddd;
-  background-color: #f1f6fb;
-  border-radius: 8px;
-  font-family: 'Montserrat', sans-serif;
-  font-size: 1rem;
-  transition: border-color 0.3s;
-}
-
-.auth-form input:focus {
-  outline: none;
-  border-color: #009FE3;
-}
-
-.auth-form input:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-.btn {
-  padding: 12px 20px;
-  font-size: 1rem;
-  font-weight: 600;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.3s;
-  position: relative;
-}
-
-.btn-primary {
-  background-color: #009FE3;
-  color: white;
-}
-
-.btn-primary:hover:not(:disabled) {
-  background-color: #007cb3;
-  transform: translateY(-1px);
-}
-
-.btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-  transform: none;
-}
-
-.error-message {
-  color: #dc3545;
-  font-size: 0.9rem;
-  padding: 10px;
-  background-color: #f8d7da;
-  border: 1px solid #f5c6cb;
-  border-radius: 4px;
-  text-align: center;
-}
-
-.success-message {
-  color: #155724;
-  font-size: 0.9rem;
-  padding: 10px;
-  background-color: #d4edda;
-  border: 1px solid #c3e6cb;
-  border-radius: 4px;
-  text-align: center;
-}
-
-.input-group {
-  display: flex;
-  gap: 10px;
-}
-
-.password-group {
-  display: flex;
-  align-items: center;
-}
-.btn-eye {
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 0 10px;
-  font-size: 1.3rem;
-  color: #717501;
-  display: flex;
-  align-items: center;
-}
-
-.btn .spin {
-  display: inline-block;
-  vertical-align: middle;
-  margin-right: 8px;
-  width: 1.1em;
-  height: 1.1em;
-  border: 2.5px solid #fff;
-  border-top: 2.5px solid #009FE3;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-}
-@keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
-
 @media (max-width: 768px) {
-  .auth-container {
-    padding: 20px;
+  .auth-section {
+    padding: 10px;
   }
 }
 </style>

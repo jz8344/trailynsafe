@@ -4,10 +4,6 @@
       <div class="password-card">
         <!-- Header -->
         <div class="password-header">
-          <button @click="goBack" class="btn-back">
-            <i class="bi bi-arrow-left"></i>
-            Regresar
-          </button>
           <h2>
             <i class="bi bi-shield-lock"></i>
             Cambiar contraseña
@@ -191,6 +187,13 @@
             </div>
           </div>
         </div>
+
+        <!-- Enlaces -->
+        <div class="recovery-footer">
+          <button @click="goBack" class="btn-link">
+            <i class="bi bi-arrow-left"></i> Regresar al inicio
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -355,29 +358,6 @@ async function cambiarContrasena() {
   gap: 12px;
 }
 
-.btn-back {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  background: linear-gradient(135deg, #2196f3 0%, #1976d2 100%);
-  color: white;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 20px;
-  font-size: 0.85rem;
-  font-weight: 600;
-  transition: all 0.3s ease;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.btn-back:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(33, 150, 243, 0.4);
-  background: linear-gradient(135deg, #1976d2 0%, #0d47a1 100%);
-}
-
 .password-form {
   padding: 25px 30px 30px;
 }
@@ -454,12 +434,19 @@ async function cambiarContrasena() {
   background: #ffffff;
 }
 
+.form-control:disabled {
+  background: #f5f5f5;
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
 .input-group .btn {
   border: none;
   padding: 12px 16px;
   background: #f0f0f0;
   color: #546e7a;
   transition: all 0.3s ease;
+  white-space: nowrap;
 }
 
 .input-group .btn:hover {
@@ -583,11 +570,13 @@ async function cambiarContrasena() {
   display: flex;
   gap: 12px;
   align-items: flex-start;
+  text-align: left;
 }
 
 .info-card i {
   font-size: 1.2rem;
   margin-top: 2px;
+  color: #1976d2;
 }
 
 .info-card strong {
@@ -601,19 +590,50 @@ async function cambiarContrasena() {
   line-height: 1.4;
 }
 
+.recovery-footer {
+  text-align: center;
+  padding-top: 20px;
+  border-top: 1px solid #e0e0e0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.btn-link {
+  color: #1976d2;
+  text-decoration: none;
+  font-size: 0.95rem;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.btn-link:hover {
+  background: rgba(25, 118, 210, 0.05);
+  color: #1565c0;
+}
+
 .spin {
   animation: spin 1s linear infinite;
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }
 
 @keyframes fadeInUp {
   from {
     opacity: 0;
-    transform: translateY(30px);
+    transform: translateY(20px);
   }
   to {
     opacity: 1;
@@ -633,14 +653,6 @@ async function cambiarContrasena() {
   
   .password-header h2 {
     font-size: 1.5rem;
-    margin-right: 80px;
-  }
-  
-  .btn-back {
-    top: 15px;
-    right: 15px;
-    padding: 6px 12px;
-    font-size: 0.8rem;
   }
   
   .password-form {
@@ -655,6 +667,15 @@ async function cambiarContrasena() {
     flex-direction: column;
   }
 }
+  
+  .recovery-footer {
+    gap: 8px;
+  }
+  
+  .btn-link {
+    font-size: 0.9rem;
+  }
+
 
 @media (max-width: 480px) {
   .change-pass-container {
@@ -673,6 +694,16 @@ async function cambiarContrasena() {
   .btn {
     padding: 14px 20px;
     font-size: 0.95rem;
+  }
+}
+
+@media (max-width: 360px) {
+  .password-card {
+    padding: 20px 15px;
+  }
+  
+  .step-info h3 {
+    font-size: 1rem;
   }
 }
 </style>

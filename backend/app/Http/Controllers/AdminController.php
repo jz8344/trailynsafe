@@ -22,7 +22,7 @@ class AdminController extends Controller
         $validator = Validator::make($request->all(), [
             'nombre' => 'required|string',
             'apellidos' => 'required|string',
-            'email' => 'required|email|unique:admins,email',
+            'email' => 'required|email|unique:usuarios,correo',
             'password' => 'required|string|min:6',
         ]);
 

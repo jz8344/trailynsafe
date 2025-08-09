@@ -1,12 +1,11 @@
 import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router'
-import { iniciarValidacionPeriodica, iniciarValidacionVisibilidad } from './middleware/authMiddleware.js'
+
+// Importar Bootstrap
+import 'bootstrap/dist/css/bootstrap.min.css'
+import 'bootstrap/dist/js/bootstrap.bundle.min.js'
 
 const app = createApp(App)
 app.use(router)
 app.mount('#app')
-
-// Iniciar validación agresiva de sesión
-iniciarValidacionPeriodica()
-iniciarValidacionVisibilidad()

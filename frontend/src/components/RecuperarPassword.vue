@@ -556,19 +556,41 @@ async function actualizarContrasena() {
 
 .input-group {
   display: flex;
-  gap: 0;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 2px solid #e0e0e0;
+  transition: all 0.3s ease;
+}
+
+.input-group:focus-within {
+  border-color: #1976d2;
+  box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.1);
 }
 
 .input-group .form-control {
-  border-radius: 12px 0 0 12px;
-  border-right: none;
+  flex: 1;
+  border: none;
+  border-radius: 0;
+  background: #f8fbff;
+}
+
+.input-group .form-control:focus {
+  background: #fff;
 }
 
 .input-group .btn {
-  border-radius: 0 12px 12px 0;
-  border-left: none;
+  border: none;
+  border-radius: 0;
+  background: #f0f0f0;
+  color: #546e7a;
   white-space: nowrap;
   padding: 14px 16px;
+  transition: all 0.3s ease;
+}
+
+.input-group .btn:hover {
+  background: #e0e0e0;
+  color: #1976d2;
 }
 
 .password-strength {

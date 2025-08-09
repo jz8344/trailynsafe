@@ -4,10 +4,6 @@
       <div class="email-card">
         <!-- Header -->
         <div class="email-header">
-          <button @click="goBack" class="btn-back">
-            <i class="bi bi-arrow-left"></i>
-            Regresar
-          </button>
           <h2>
             Cambiar correo electrónico
           </h2>
@@ -43,7 +39,9 @@
                   'is-invalid': nuevoCorreo && (!validEmail || nuevoCorreo === correoActual)
                 }"
                 placeholder="ejemplo@correo.com"
-                required 
+                required
+                @input="sanitizeCorreo"
+                @blur="sanitizeCorreo"
               />
               <div v-if="nuevoCorreo && !validEmail" class="invalid-feedback">
                 <i class="bi bi-exclamation-circle"></i>
@@ -79,6 +77,13 @@
             <i class="bi bi-check-circle"></i>
             {{ correoSuccess }}
           </div>
+
+          <!-- Enlaces -->
+          <div class="recovery-footer">
+            <button @click="goBack" class="btn-link">
+              <i class="bi bi-arrow-left"></i> Regresar al inicio
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -107,6 +112,8 @@
                 class="form-control" 
                 placeholder="Tu contraseña actual"
                 :class="{ 'is-invalid': modalError }"
+                @input="sanitizeContrasena"
+                @blur="sanitizeContrasena"
               />
               <button 
                 type="button" 
@@ -179,6 +186,21 @@ const canSubmit = computed(() => {
   return nuevoCorreo.value && validEmail.value && nuevoCorreo.value !== correoActual;
 });
 
+// Función para sanitizar entrada de texto
+function sanitizeInput(input) {
+  // Remueve caracteres especiales peligrosos
+  return input.replace(/[<>\/\\}=+,`~|[\]{}]/g, '');
+}
+
+// Funciones de sanitización
+function sanitizeCorreo() {
+  nuevoCorreo.value = sanitizeInput(nuevoCorreo.value);
+}
+
+function sanitizeContrasena() {
+  contrasenaActual.value = sanitizeInput(contrasenaActual.value);
+}
+
 function goBack() {
   router.push('/');
 }
@@ -234,7 +256,20 @@ async function cambiarCorreo() {
     }, 2000); 
     
   } catch (e) {
-    modalError.value = e.response?.data?.error || 'Error al cambiar correo.';
+    if (e.response?.status === 422) {
+      const errors = e.response.data.error;
+      if (errors.nuevo_correo) {
+        modalError.value = 'Este correo electrónico ya está registrado. Por favor, utiliza otro correo.';
+      } else if (errors.contrasena_actual) {
+        modalError.value = 'La contraseña actual es requerida.';
+      } else {
+        modalError.value = 'Datos inválidos. Verifica la información ingresada.';
+      }
+    } else if (e.response?.status === 401) {
+      modalError.value = 'Contraseña actual incorrecta.';
+    } else {
+      modalError.value = e.response?.data?.error || 'Error al cambiar correo. Intenta nuevamente.';
+    }
   } finally {
     loadingCorreo.value = false;
   }
@@ -292,29 +327,6 @@ async function cambiarCorreo() {
   align-items: center;
   justify-content: center;
   gap: 12px;
-}
-
-.btn-back {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  background: linear-gradient(135deg, #2196f3 0%, #1976d2 100%);
-  color: white;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 20px;
-  font-size: 0.85rem;
-  font-weight: 600;
-  transition: all 0.3s ease;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.btn-back:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(33, 150, 243, 0.4);
-  background: linear-gradient(135deg, #1976d2 0%, #0d47a1 100%);
 }
 
 .email-form {
@@ -560,6 +572,37 @@ async function cambiarCorreo() {
   flex: 1;
 }
 
+.recovery-footer {
+  text-align: center;
+  padding-top: 20px;
+  border-top: 1px solid #e0e0e0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.btn-link {
+  color: #1976d2;
+  text-decoration: none;
+  font-size: 0.95rem;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.btn-link:hover {
+  background: rgba(25, 118, 210, 0.05);
+  color: #1565c0;
+}
+
 .spin {
   animation: spin 1s linear infinite;
 }
@@ -597,14 +640,6 @@ async function cambiarCorreo() {
   
   .email-header h2 {
     font-size: 1.5rem;
-    margin-right: 80px;
-  }
-  
-  .btn-back {
-    top: 15px;
-    right: 15px;
-    padding: 6px 12px;
-    font-size: 0.8rem;
   }
   
   .email-form {

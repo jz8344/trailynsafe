@@ -83,6 +83,11 @@
             </ul>
 
             <router-link to="/editar-perfil" class="btn btn-primary action-full">Editar perfil</router-link>
+            
+            <button @click="consultarPerfil" class="btn btn-outline action-full mt-2" style="font-size: 0.9rem;">
+              <i class="bi bi-arrow-clockwise me-1"></i>
+              Actualizar información
+            </button>
           </section>
         </div>
         <div class="modal-footer simple">
@@ -98,10 +103,11 @@
 import logo from '/img/logo.png';
 import { ref, onMounted, onUnmounted, watch } from 'vue';
 import axios from 'axios';
-import { useRouter } from 'vue-router';
+import { useRouter, useRoute } from 'vue-router';
 import { usuario, logoutUsuario } from '@/store/session.js';
 
 const router = useRouter();
+const route = useRoute();
 const showProfile = ref(false);
 const showMobileMenu = ref(false);
 const conexionPerdida = ref(false);
@@ -121,7 +127,8 @@ function closeMobileMenu() {
 function openProfile() {
   showProfile.value = true;
   closeMobileMenu();
-  consultarPerfil();
+  // No consultar el perfil automáticamente al abrir
+  // La información ya está disponible desde el login
 }
 
 function closeProfile() {
@@ -153,7 +160,8 @@ async function consultarPerfil() {
   if (!token) return;
   try {
     const res = await axios.get('http://127.0.0.1:8000/api/sesion', {
-      headers: { Authorization: 'Bearer ' + token }
+      headers: { Authorization: 'Bearer ' + token },
+      timeout: 10000 // Aumentar timeout
     });
     // Si la API devuelve datos de usuario, actualiza el store
     if (res.data && res.data.usuario) {
@@ -161,46 +169,45 @@ async function consultarPerfil() {
       localStorage.setItem('usuario', JSON.stringify(res.data.usuario));
     }
   } catch (e) {
-    // Si falla, cierra sesión
-    cerrarSesion();
+    // Solo cerrar sesión si es error 401 específicamente
+    // Ignorar otros errores (timeout, conexión, etc.)
+    if (e.response && e.response.status === 401) {
+      console.warn('Sesión inválida - cerrando sesión');
+      cerrarSesion();
+    } else {
+      console.warn('Error al consultar perfil (no crítico):', e.message);
+      // No hacer nada, mantener la sesión
+    }
   }
 }
 
-// Verificación de sesión cada 8 segundos
 async function verificarSesionPeriodicamente() {
   sesionIntervalId = setInterval(async () => {
     const token = localStorage.getItem('token');
     if (!token) return;
 
     try {
-      await axios.get('http://127.0.0.1:8000/api/validar-sesion', {
+      await axios.get('http://127.0.0.1:8000/api/sesion', {
         headers: { Authorization: 'Bearer ' + token },
         timeout: 9000 
       });
 
-      // Si la respuesta es exitosa, quitar mensaje de conexión perdida
       if (conexionPerdida.value) {
         conexionPerdida.value = false;
       }
 
     } catch (e) {
-      // Error 401 = Token inválido o sesión expirada
       if (e.response && e.response.status === 401) {
         localStorage.clear();
         sessionStorage.clear();
-        alert('Por seguridad, tu sesión ha finalizado. Serás redirigido al inicio de sesión para continuar.');
+        alert('Tu sesión ha expirado. Por favor inicia sesión nuevamente.');
         window.location.replace('/login');
-      } 
-      // Otros errores = problemas de conexión
-      else if (e.code === 'ECONNABORTED' || !e.response) {
-        // Solo mostrar mensaje de conexión perdida, NO cerrar sesión
+      } else {
+        conexionPerdida.value = false;
+        await new Promise(res => setTimeout(res, 10));
         conexionPerdida.value = true;
-        console.warn('Error de conexión con el servidor:', e.message);
-      }
-      // Error 500, 503, etc. = servidor tiene problemas
-      else if (e.response && e.response.status >= 500) {
-        conexionPerdida.value = true;
-        console.warn('El servidor está experimentando problemas:', e.response.status);
+
+        console.warn('Error de conexión detectado.');
       }
     }
   }, 8000);
@@ -222,6 +229,13 @@ watch(showProfile, (open) => {
       }
       modalRef.value?.focus?.();
     });
+  }
+});
+
+// Cerrar modal cuando navegue a editar perfil
+watch(route, (newRoute) => {
+  if (newRoute.path === '/editar-perfil') {
+    showProfile.value = false;
   }
 });
 
@@ -558,6 +572,10 @@ body {
   display: block;
   width: 100%;
   text-align: center;
+}
+
+.mt-2 {
+  margin-top: 0.5rem;
 }
 
 .modal-footer {
