@@ -73,7 +73,7 @@ const routes = [
      component: () => import('../components/RecuperarPassword.vue')
    },
    
-   // Rutas de Administrador (ocultas del nav)
+   // Rutas de Administrador 
    {
      path: '/admin/login',
      name: 'AdminLogin',
@@ -88,6 +88,12 @@ const routes = [
      path: '/admin/dashboard',
      name: 'AdminDashboard',
      component: () => import('../admin_frontend/AdminDashboard.vue'),
+     meta: { middleware: [adminAuth] }
+   },
+   {
+     path: '/admin/usuarios',
+     name: 'AdminUsers',
+     component: () => import('../admin_frontend/AdminUsers.vue'),
      meta: { middleware: [adminAuth] }
    },
    {

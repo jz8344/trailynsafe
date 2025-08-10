@@ -47,14 +47,14 @@ import FooterSection from '@/components/FooterSection.vue';
 const map = ref(null);
 const busMarker = ref(null);
 const route = [
-  [20.5938, -100.3899], // Inicio
+  [20.5938, -100.3899],
   [20.5940, -100.3890],
-  [20.5950, -100.3880], // Se acerca a casa
-  [20.5965, -100.3875], // Junior subió
-  [20.5978, -100.3860], // Aceleración
-  [20.5990, -100.3850], // Freno brusco
-  [20.6000, -100.3840], // Cerca de escuela
-  [20.6010, -100.3830]  // Llegada a escuela
+  [20.5950, -100.3880],
+  [20.5965, -100.3875],
+  [20.5978, -100.3860],
+  [20.5990, -100.3850],
+  [20.6000, -100.3840],
+  [20.6010, -100.3830]
 ];
 
 const notifications = ref([]);

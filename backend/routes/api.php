@@ -38,6 +38,10 @@ Route::middleware(['auth:sanctum', \App\Http\Middleware\CheckRoleUsuario::class]
 // Rutas protegidas para administradores
 Route::middleware(['auth:admin-sanctum', \App\Http\Middleware\CheckRoleAdmin::class])->group(function () {
     Route::get('/usuarios', [AdminController::class, 'list']);
+    Route::get('/admin/usuarios', [AdminController::class, 'usersIndex']);
+    Route::post('/admin/usuarios', [AdminController::class, 'createUser']);
+    Route::put('/admin/usuarios/{id}', [AdminController::class, 'updateUser']);
+    Route::delete('/admin/usuarios/{id}', [AdminController::class, 'deleteUser']);
     Route::get('/admin/sesion', [SessionController::class, 'index']);
     Route::get('/admin/validar-sesion', [SessionController::class, 'validarSesion']);
     Route::post('/admin/editar-perfil', [AdminController::class, 'editarPerfil']);

@@ -218,21 +218,16 @@ const loading = ref(false);
 const success = ref(false);
 const showPassword = ref(false);
 
-// Función para capitalizar nombres
 function capitalizeName(name) {
   return name.replace(/\b\w/g, l => l.toUpperCase());
 }
 
-// Función para sanitizar entrada de texto
 function sanitizeInput(input) {
-  // Remueve caracteres especiales peligrosos
   return input.replace(/[<>\/\\}=+,`~|[\]{}]/g, '');
 }
 
-// Validaciones en tiempo real
 function validateNombre() {
   const nombre = form.nombre;
-  // Remover números y caracteres especiales, solo permitir letras y espacios
   form.nombre = nombre.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, '');
   
   if (!form.nombre) {
@@ -243,14 +238,12 @@ function validateNombre() {
     errors.value.nombre = ['El nombre no puede tener más de 50 caracteres'];
   } else {
     errors.value.nombre = [];
-    // Aplicar capitalización
     form.nombre = capitalizeName(form.nombre);
   }
 }
 
 function validateApellidos() {
   const apellidos = form.apellidos;
-  // Remover números y caracteres especiales, solo permitir letras y espacios
   form.apellidos = apellidos.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, '');
   
   if (!form.apellidos) {
@@ -261,13 +254,11 @@ function validateApellidos() {
     errors.value.apellidos = ['Los apellidos no pueden tener más de 50 caracteres'];
   } else {
     errors.value.apellidos = [];
-    // Aplicar capitalización
     form.apellidos = capitalizeName(form.apellidos);
   }
 }
 
 function validateTelefono() {
-  // Solo permitir números
   form.telefono = form.telefono.replace(/\D/g, '');
   
   if (!form.telefono) {
@@ -280,7 +271,6 @@ function validateTelefono() {
 }
 
 function validateCorreo() {
-  // Sanitizar el correo
   form.correo = sanitizeInput(form.correo);
   
   const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
@@ -295,7 +285,6 @@ function validateCorreo() {
 }
 
 function validateContrasena() {
-  // Sanitizar la contraseña removiendo caracteres peligrosos
   form.contrasena = sanitizeInput(form.contrasena);
   
   if (!form.contrasena) {
@@ -310,14 +299,12 @@ function validateContrasena() {
 }
 
 const register = async () => {
-  // Validar todos los campos antes de enviar
   validateNombre();
   validateApellidos();
   validateTelefono();
   validateCorreo();
   validateContrasena();
   
-  // Verificar si hay errores
   const hasErrors = Object.values(errors.value).some(error => 
     Array.isArray(error) ? error.length > 0 : error
   );
@@ -339,7 +326,7 @@ const register = async () => {
   success.value = false;
 
   try {
-    console.log('Enviando datos:', form); 
+  console.log('Enviando datos:', form); 
     const response = await axios.post('http://127.0.0.1:8000/api/register', form, {
       headers: { 'Content-Type': 'application/json' }
     });
@@ -348,9 +335,8 @@ const register = async () => {
       router.push({ name: 'Login' });
     }, 2000);
   } catch (error) {
-    console.error('Error completo:', error.response || error); 
+  console.error('Error completo:', error.response || error); 
     if (error.response && error.response.status === 422) {
-      // Convertir errores del servidor al formato esperado
       const serverErrors = error.response.data.errors;
       for (const field in serverErrors) {
         if (errors.value.hasOwnProperty(field)) {

@@ -2,7 +2,6 @@ import axios from 'axios';
 
 const API_BASE = 'http://127.0.0.1:8000/api';
 
-// Colores para consola
 const colors = {
   red: '\x1b[31m',
   green: '\x1b[32m',
@@ -30,19 +29,14 @@ class RouteTester {
     this.log('=' * 50, 'cyan');
 
     try {
-      // 1. Registrar y obtener tokens
       await this.setupTestUsers();
       
-      // 2. Test rutas de usuario
       await this.testUserRoutes();
       
-      // 3. Test rutas de admin
       await this.testAdminRoutes();
       
-      // 4. Test acceso cruzado (usuario intentando acceder a admin y viceversa)
       await this.testCrossAccess();
       
-      // 5. Mostrar resumen
       this.showSummary();
       
     } catch (error) {
@@ -54,7 +48,6 @@ class RouteTester {
     this.log('\n📋 CONFIGURANDO USUARIOS DE PRUEBA', 'yellow');
     
     try {
-      // Registrar usuario regular
       const userData = {
         nombre: 'Usuario',
         apellidos: 'Test',
@@ -66,7 +59,6 @@ class RouteTester {
       await axios.post(`${API_BASE}/register`, userData);
       this.log('✅ Usuario regular registrado', 'green');
 
-      // Login usuario regular
       const userLogin = await axios.post(`${API_BASE}/login`, {
         correo: userData.correo,
         contrasena: userData.contrasena
@@ -74,7 +66,6 @@ class RouteTester {
       this.userToken = userLogin.data.token;
       this.log('✅ Token de usuario obtenido', 'green');
 
-      // Registrar admin
       const adminData = {
         nombre: 'Admin',
         apellidos: 'Test',
@@ -86,7 +77,6 @@ class RouteTester {
       await axios.post(`${API_BASE}/admin/register`, adminData);
       this.log('✅ Admin registrado', 'green');
 
-      // Login admin
       const adminLogin = await axios.post(`${API_BASE}/admin/login`, {
         email: adminData.email,
         password: adminData.password
@@ -141,7 +131,6 @@ class RouteTester {
   async testCrossAccess() {
     this.log('\n🔄 TESTING ACCESO CRUZADO (Seguridad)', 'yellow');
     
-    // Usuario intentando acceder a rutas de admin
     this.log('\n🚫 Usuario intentando acceder a rutas de admin:', 'yellow');
     const adminRoutesForUser = [
       { method: 'GET', url: '/usuarios', description: 'Usuario -> Listar usuarios (debe fallar)' },
@@ -157,7 +146,6 @@ class RouteTester {
       });
     }
 
-    // Admin intentando acceder a rutas de usuario (esto debería funcionar en algunos casos)
     this.log('\n🔄 Admin intentando acceder a rutas de usuario:', 'yellow');
     const userRoutesForAdmin = [
       { method: 'GET', url: '/sesion', description: 'Admin -> Sesión usuario (middleware específico)' },
@@ -255,13 +243,11 @@ class RouteTester {
   }
 }
 
-// Función para ejecutar desde la consola del navegador
 export async function testProtectedRoutes() {
   const tester = new RouteTester();
   await tester.runAllTests();
 }
 
-// Auto-ejecutar si se está corriendo directamente
 if (typeof window !== 'undefined') {
   window.testProtectedRoutes = testProtectedRoutes;
   console.log('🧪 Test de rutas cargado. Ejecuta testProtectedRoutes() para iniciar.');

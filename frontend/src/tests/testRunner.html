@@ -251,18 +251,16 @@
             }
             
             formatMessage(message) {
-                // Eliminar códigos de color ANSI y aplicar colores HTML
                 let formatted = message
-                    .replace(/\x1b\[31m/g, '<span style="color: #ff6b6b;">') // rojo
-                    .replace(/\x1b\[32m/g, '<span style="color: #51cf66;">') // verde
-                    .replace(/\x1b\[33m/g, '<span style="color: #ffd43b;">') // amarillo
-                    .replace(/\x1b\[34m/g, '<span style="color: #339af0;">') // azul
-                    .replace(/\x1b\[35m/g, '<span style="color: #e599f7;">') // magenta
-                    .replace(/\x1b\[36m/g, '<span style="color: #3bc9db;">') // cyan
-                    .replace(/\x1b\[37m/g, '<span style="color: #f8f9fa;">') // blanco
-                    .replace(/\x1b\[0m/g, '</span>'); // reset
+                    .replace(/\x1b\[31m/g, '<span style="color: #ff6b6b;">') 
+                    .replace(/\x1b\[32m/g, '<span style="color: #51cf66;">') 
+                    .replace(/\x1b\[33m/g, '<span style="color: #ffd43b;">') 
+                    .replace(/\x1b\[34m/g, '<span style="color: #339af0;">') 
+                    .replace(/\x1b\[35m/g, '<span style="color: #e599f7;">') 
+                    .replace(/\x1b\[36m/g, '<span style="color: #3bc9db;">') 
+                    .replace(/\x1b\[37m/g, '<span style="color: #f8f9fa;">') 
+                    .replace(/\x1b\[0m/g, '</span>'); 
                 
-                // Agregar iconos y estilos especiales
                 formatted = formatted
                     .replace(/✅/g, '<span class="status-indicator status-success"></span>✅')
                     .replace(/❌/g, '<span class="status-indicator status-error"></span>❌')
@@ -336,7 +334,6 @@
             }
         }
         
-        // Inicializar la UI cuando se carga la página
         document.addEventListener('DOMContentLoaded', () => {
             new TestUI();
         });

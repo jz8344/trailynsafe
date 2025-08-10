@@ -2,7 +2,6 @@
   <div class="change-email-container">
     <div class="container">
       <div class="email-card">
-        <!-- Header -->
         <div class="email-header">
           <h2>
             Cambiar correo electrónico
@@ -68,7 +67,6 @@
             </button>
           </form>
 
-          <!-- Mensajes -->
           <div v-if="correoError" class="alert alert-danger">
             <i class="bi bi-exclamation-triangle"></i>
             {{ correoError }}
@@ -78,7 +76,6 @@
             {{ correoSuccess }}
           </div>
 
-          <!-- Enlaces -->
           <div class="recovery-footer">
             <button @click="goBack" class="btn-link">
               <i class="bi bi-arrow-left"></i> Regresar al inicio
@@ -88,7 +85,6 @@
       </div>
     </div>
 
-    <!-- Modal de confirmación -->
     <div v-if="mostrarModal" class="modal-overlay">
       <div class="modal-content">
         <div class="modal-header">
@@ -170,14 +166,11 @@ const modalError = ref('');
 const showPassword = ref(false);
 
 const validEmail = computed(() => {
-  // Dominios permitidos
   const allowedDomains = [
     'gmail.com', 'hotmail.com', 'outlook.com', 'outlook.es', 'proton.me', 'protonmail.com', 'utzmg.edu.mx'
   ];
-  // Expresión regular para email básico
   const basicEmail = /^[a-zA-Z0-9._%+-]+@([a-zA-Z0-9.-]+)\.[a-zA-Z]{2,}$/;
   if (!basicEmail.test(nuevoCorreo.value)) return false;
-  // Extraer dominio
   const domain = nuevoCorreo.value.split('@')[1]?.toLowerCase();
   return allowedDomains.includes(domain);
 });
@@ -186,13 +179,10 @@ const canSubmit = computed(() => {
   return nuevoCorreo.value && validEmail.value && nuevoCorreo.value !== correoActual;
 });
 
-// Función para sanitizar entrada de texto
 function sanitizeInput(input) {
-  // Remueve caracteres especiales peligrosos
   return input.replace(/[<>\/\\}=+,`~|[\]{}]/g, '');
 }
 
-// Funciones de sanitización
 function sanitizeCorreo() {
   nuevoCorreo.value = sanitizeInput(nuevoCorreo.value);
 }
@@ -243,7 +233,6 @@ async function cambiarCorreo() {
       headers: { Authorization: `Bearer ${token}` }
     });
     
-    // Actualiza el usuario en el store si la API lo devuelve
     if (res.data.usuario) {
       loginUsuario(res.data.usuario);
     }

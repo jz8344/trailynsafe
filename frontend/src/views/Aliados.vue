@@ -122,7 +122,7 @@ function handleMouseEnter(escuela) {
   hoverTimeouts.value[escuela.nombre] = setTimeout(() => {
     escuelaSeleccionada.value = escuela;
     showModal.value = true;
-  }, 2500); // Cambiado a 2.5 segundos
+  }, 2500); 
 }
 
 function handleMouseLeave(escuela) {

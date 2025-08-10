@@ -24,7 +24,6 @@
       <p>&copy; 2025 Trailyn Safe. Todos los derechos reservados.</p>
     </div>
 
-    <!-- Modales legales -->
     <transition name="fade-fast">
       <div v-if="modal" class="modal-overlay" @click.self="closeModal" @keyup.esc="closeModal" tabindex="-1">
         <div class="modal" role="dialog" :aria-labelledby="modal + '-title'" aria-modal="true">
@@ -37,7 +36,6 @@
             <button class="close-btn" type="button" @click="closeModal" aria-label="Cerrar">✕</button>
           </div>
           <div class="modal-body">
-            <!-- Términos -->
             <template v-if="modal==='terminos'">
               <p class="disclaimer"><strong>Descargo:</strong> Este texto es informativo y no constituye asesoría legal definitiva. Ajustar con su departamento legal.</p>
               <h5>1. Aceptación</h5>
@@ -60,7 +58,6 @@
               <p>Estos Términos se interpretan conforme a la legislación mexicana salvo que la normativa de protección al consumidor local disponga otra cosa.</p>
             </template>
 
-            <!-- Privacidad / Protección de Datos -->
             <template v-else-if="modal==='privacidad'">
               <p class="disclaimer"><strong>Nota:</strong> Resumen orientativo basado en la Ley Federal de Protección de Datos Personales en Posesión de los Particulares (LFPDPPP).</p>
               <h5>Finalidades del Tratamiento</h5>
@@ -85,7 +82,6 @@
               <p>Consulta la sección Derechos ARCO para conocer cómo ejercer tus derechos de acceso, rectificación, cancelación y oposición.</p>
             </template>
 
-            <!-- Derechos ARCO -->
             <template v-else-if="modal==='arco'">
               <p class="disclaimer"><strong>Contexto:</strong> Derechos ARCO conforme a la LFPDPPP en México.</p>
               <h5>¿Qué son los Derechos ARCO?</h5>

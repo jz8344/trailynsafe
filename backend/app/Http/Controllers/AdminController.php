@@ -137,4 +137,77 @@ class AdminController extends Controller
 
         return response()->json(['message' => 'Contraseña actualizada correctamente.']);
     }
+
+    public function usersIndex()
+    {
+        $users = Usuario::where('rol', '!=', 'admin')->orderByDesc('id')->get();
+        return response()->json($users);
+    }
+
+    public function createUser(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'nombre' => 'required|string',
+            'apellidos' => 'required|string',
+            'telefono' => 'nullable|string',
+            'correo' => 'required|email|unique:usuarios,correo',
+            'contrasena' => 'required|string|min:6'
+        ]);
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        }
+        $user = Usuario::create([
+            'nombre' => ucwords(strtolower($request->nombre)),
+            'apellidos' => ucwords(strtolower($request->apellidos)),
+            'telefono' => $request->telefono ?? '',
+            'correo' => $request->correo,
+            'rol' => 'usuario',
+            'contrasena' => Hash::make($request->contrasena),
+            'fecha_registro' => now(),
+        ]);
+        return response()->json($user, 201);
+    }
+
+    public function updateUser(Request $request, $id)
+    {
+        $user = Usuario::find($id);
+        if (!$user || $user->rol === 'admin') {
+            return response()->json(['error' => 'Usuario no encontrado.'], 404);
+        }
+        $validator = Validator::make($request->all(), [
+            'nombre' => 'sometimes|string',
+            'apellidos' => 'sometimes|string',
+            'telefono' => 'sometimes|nullable|string',
+            'correo' => 'sometimes|email|unique:usuarios,correo,' . $user->id,
+            'contrasena' => 'sometimes|string|min:6'
+        ]);
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        }
+        $data = [];
+        foreach (['nombre','apellidos','telefono','correo'] as $field) {
+            if ($request->has($field)) {
+                $val = $request->$field;
+                if (in_array($field, ['nombre','apellidos'])) {
+                    $val = ucwords(strtolower($val));
+                }
+                $data[$field] = $val;
+            }
+        }
+        if ($request->has('contrasena')) {
+            $data['contrasena'] = Hash::make($request->contrasena);
+        }
+        $user->update($data);
+        return response()->json($user->fresh());
+    }
+
+    public function deleteUser($id)
+    {
+        $user = Usuario::find($id);
+        if (!$user || $user->rol === 'admin') {
+            return response()->json(['error' => 'Usuario no encontrado.'], 404);
+        }
+        $user->delete();
+        return response()->json(['message' => 'Usuario eliminado.']);
+    }
 }

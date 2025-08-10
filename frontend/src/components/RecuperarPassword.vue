@@ -11,7 +11,6 @@
           <p class="recovery-subtitle">Sigue los pasos para restablecer tu contraseña de forma segura</p>
         </div>
 
-        <!-- Indicador de progreso -->
         <div class="progress-indicator">
           <div class="progress-step" :class="{ active: step >= 1, completed: step > 1 }">
             <div class="step-circle">1</div>
@@ -30,7 +29,6 @@
         </div>
 
         <div class="recovery-form">
-          <!-- Paso 1: Correo -->
           <div v-if="step === 1" class="step-content">
             <div class="step-header">
               <h3><i class="bi bi-envelope"></i> Ingresa tu correo electrónico</h3>
@@ -60,7 +58,6 @@
             </button>
           </div>
 
-          <!-- Paso 2: Código -->
           <div v-if="step === 2" class="step-content">
             <div class="step-header">
               <h3><i class="bi bi-key"></i> Verifica tu código</h3>
@@ -97,7 +94,6 @@
             </div>
           </div>
 
-          <!-- Paso 3: Nueva contraseña -->
           <div v-if="step === 3" class="step-content">
             <div class="step-header">
               <h3><i class="bi bi-lock"></i> Nueva contraseña</h3>
@@ -163,7 +159,6 @@
           </div>
         </div>
 
-        <!-- Mensajes -->
         <div v-if="error" class="alert alert-danger">
           <i class="bi bi-exclamation-triangle"></i>
           {{ error }}
@@ -173,7 +168,6 @@
           {{ success }}
         </div>
 
-        <!-- Enlaces -->
         <div class="recovery-footer">
           <router-link to="/login" class="btn-link">
             <i class="bi bi-arrow-left"></i> Volver al inicio de sesión

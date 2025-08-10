@@ -1,6 +1,5 @@
 <template>
   <div class="min-vh-100 bg-light">
-    <!-- Header -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-white shadow-sm border-bottom">
       <div class="container-fluid px-4">
         <div class="d-flex align-items-center">
@@ -30,15 +29,12 @@
       </div>
     </nav>
 
-    <!-- Main Content -->
     <main class="container-fluid px-4 py-4">
-      <!-- Welcome Section -->
       <div class="mb-4">
         <h2 class="fw-bold text-dark mb-2">¡Bienvenido al Panel!</h2>
         <p class="text-muted">Administra el sistema TrailynSafe desde aquí</p>
       </div>
 
-      <!-- Stats Cards -->
       <div class="row g-4 mb-4">
         <div class="col-lg-3 col-md-6">
           <div class="card h-100 shadow-sm border-0">
@@ -109,9 +105,7 @@
         </div>
       </div>
 
-      <!-- Management Cards -->
       <div class="row g-4">
-        <!-- Gestión de Usuarios -->
         <div class="col-lg-4 col-md-6">
           <div class="card h-100 shadow-sm border-0 overflow-hidden">
             <div class="card-header text-white border-0" style="background: linear-gradient(135deg, #3b82f6, #2563eb);">
@@ -133,7 +127,6 @@
           </div>
         </div>
 
-        <!-- Base de Datos y Respaldos -->
         <div class="col-lg-4 col-md-6">
           <div class="card h-100 shadow-sm border-0 overflow-hidden">
             <div class="card-header text-white border-0" style="background: linear-gradient(135deg, #16a34a, #15803d);">
@@ -164,7 +157,6 @@
           </div>
         </div>
 
-        <!-- Mi Perfil de Admin -->
         <div class="col-lg-4 col-md-6">
           <div class="card h-100 shadow-sm border-0 overflow-hidden">
             <div class="card-header text-white border-0" style="background: linear-gradient(135deg, #7c3aed, #6d28d9);">
@@ -239,19 +231,15 @@ export default {
       }
     },
     gestionarUsuarios() {
-      // Implementar modal o vista de gestión de usuarios
-      alert('Función de gestión de usuarios en desarrollo')
+  this.$router.push('/admin/usuarios')
     },
     crearRespaldo() {
-      // Implementar función de respaldo
       alert('Función de respaldo en desarrollo')
     },
     verRespaldos() {
-      // Implementar vista de respaldos
       alert('Función de ver respaldos en desarrollo')
     },
     cambiarContrasena() {
-      // Implementar cambio de contraseña
       alert('Función de cambio de contraseña en desarrollo')
     },
     logout() {

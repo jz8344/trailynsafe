@@ -189,32 +189,28 @@ class UsuarioController extends Controller
         if ($validator->fails()) {
             return response()->json(['error' => $validator->errors()], 422);
         }
-
-        // Validar token de validación (simple verificación)
+        
         $tokenData = base64_decode($request->token_validacion);
         $parts = explode(':', $tokenData);
         
         if (count($parts) !== 2 || $parts[0] != $user->id) {
             return response()->json(['error' => 'Token de validación inválido.'], 401);
         }
-
-        // Verificar que el token no sea muy antiguo (5 minutos)
+        
         $timestamp = $parts[1];
         if ((time() - $timestamp) > 300) {
             return response()->json(['error' => 'Token de validación expirado. Intenta nuevamente.'], 401);
         }
-
-        // Cambiar contraseña
+        
         $user->contrasena = Hash::make($request->nueva_contrasena);
         $user->save();
-
-        // Cerrar todas las sesiones del usuario
+        
         $currentToken = $request->bearerToken();
         
-        // Marcar todas las sesiones como inactivas
+        
         Sesion::where('usuario_id', $user->id)->update(['estado' => 'inactiva']);
         
-        // Eliminar todos los tokens
+        
         $user->tokens()->delete();
 
         return response()->json([

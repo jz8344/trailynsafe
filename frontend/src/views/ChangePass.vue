@@ -2,7 +2,6 @@
   <div class="change-pass-container">
     <div class="container">
       <div class="password-card">
-        <!-- Header -->
         <div class="password-header">
           <h2>
             <i class="bi bi-shield-lock"></i>
@@ -10,7 +9,6 @@
           </h2>
         </div>
 
-        <!-- Paso 1: Validar contraseña actual -->
         <div v-if="step === 1" class="password-form">
           <div class="step-info">
             <h3>
@@ -62,7 +60,6 @@
           </form>
         </div>
 
-        <!-- Paso 2: Ingresar nueva contraseña -->
         <div v-if="step === 2" class="password-form">
           <div class="step-info">
             <h3>
@@ -167,7 +164,6 @@
           </form>
         </div>
 
-        <!-- Mensajes -->
         <div v-if="passError" class="alert alert-danger">
           <i class="bi bi-exclamation-triangle"></i>
           {{ passError }}
@@ -177,7 +173,6 @@
           {{ passSuccess }}
         </div>
 
-        <!-- Información de seguridad -->
         <div class="security-info">
           <div class="info-card">
             <i class="bi bi-info-circle text-primary"></i>
@@ -188,7 +183,6 @@
           </div>
         </div>
 
-        <!-- Enlaces -->
         <div class="recovery-footer">
           <button @click="goBack" class="btn-link">
             <i class="bi bi-arrow-left"></i> Regresar al inicio
@@ -210,12 +204,10 @@ const loadingPass = ref(false);
 const passError = ref('');
 const passSuccess = ref('');
 
-// Paso 1
 const passwordActual = ref('');
 const showActual = ref(false);
 const tokenValidacion = ref('');
 
-// Paso 2
 const nuevaPassword = ref('');
 const confirmarPassword = ref('');
 const showNueva = ref(false);

@@ -52,12 +52,10 @@ public function index(Request $request)
         if (!$sesion) {
             return response()->json(['valida' => false, 'mensaje' => 'Sesión inválida o expirada.'], 401);
         }
-
-        // Verificar que el token aún existe en Sanctum
+        
         $tokenExists = PersonalAccessToken::where('id', $sesion->token_id)->exists();
         
         if (!$tokenExists) {
-            // Marcar sesión como inactiva si el token no existe
             $sesion->estado = 'inactiva';
             $sesion->save();
             return response()->json(['valida' => false, 'mensaje' => 'Token eliminado.'], 401);

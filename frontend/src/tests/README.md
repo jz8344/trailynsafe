@@ -43,7 +43,6 @@ QuickRouteTester.quickTest()
 
 ### Opción 3: Test de Ruta Específica
 ```javascript
-// Test una ruta específica
 testRoute('/sesion', 'tu_token_aqui')
 testRoute('/admin/usuarios', 'admin_token_aqui')
 ```

@@ -136,13 +136,10 @@ const success = ref('');
 const loading = ref(false);
 const showPassword = ref(false);
 
-// Función para sanitizar entrada de texto
 function sanitizeInput(input) {
-  // Remueve caracteres especiales peligrosos
   return input.replace(/[<>\/\\}=+,`~|[\]{}]/g, '');
 }
 
-// Funciones de sanitización para el login
 function sanitizeCorreo() {
   form.correo = sanitizeInput(form.correo);
 }

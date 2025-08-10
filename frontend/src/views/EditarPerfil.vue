@@ -113,7 +113,6 @@
           </router-link>
         </div>
 
-        <!-- Mensajes -->
         <div v-if="error" class="alert alert-danger">
           <i class="bi bi-exclamation-triangle"></i>
           {{ error }}
@@ -123,7 +122,6 @@
           {{ success }}
         </div>
 
-        <!-- Botones -->
         <div class="form-actions">
           <button 
             type="button" 

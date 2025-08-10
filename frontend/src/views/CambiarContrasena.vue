@@ -2,7 +2,6 @@
   <div class="change-password-container">
     <div class="container">
       <div class="password-card">
-        <!-- Header -->
         <div class="password-header">
           <button @click="goBack" class="btn-back">
             <i class="bi bi-arrow-left"></i>
@@ -14,7 +13,6 @@
           </h2>
         </div>
 
-        <!-- Paso 1: Validar contraseña actual -->
         <div v-if="step === 1" class="password-form">
           <div class="step-info">
             <h3>
@@ -65,7 +63,6 @@
           </form>
         </div>
 
-        <!-- Paso 2: Ingresar nueva contraseña -->
         <div v-if="step === 2" class="password-form">
           <div class="step-info">
             <h3>
@@ -168,7 +165,6 @@
           </form>
         </div>
 
-        <!-- Mensajes -->
         <div v-if="error" class="alert alert-danger">
           <i class="bi bi-exclamation-triangle"></i>
           {{ error }}
@@ -178,7 +174,6 @@
           {{ success }}
         </div>
 
-        <!-- Información de seguridad -->
         <div class="security-info">
           <div class="info-card">
             <i class="bi bi-info-circle text-primary"></i>
@@ -204,12 +199,10 @@ const loading = ref(false);
 const error = ref('');
 const success = ref('');
 
-// Paso 1
 const passwordActual = ref('');
 const showActual = ref(false);
 const tokenValidacion = ref('');
 
-// Paso 2
 const nuevaPassword = ref('');
 const confirmarPassword = ref('');
 const showNueva = ref(false);
@@ -284,7 +277,6 @@ async function cambiarContrasena() {
 
     success.value = res.data.message;
 
-    // Limpiar todo el almacenamiento local y redirigir
     setTimeout(() => {
       localStorage.clear();
       sessionStorage.clear();

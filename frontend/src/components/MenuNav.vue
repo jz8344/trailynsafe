@@ -1,5 +1,4 @@
 <template>
-  <!-- Alerta de conexión perdida -->
   <div v-if="conexionPerdida" class="alert alert-warning text-center conexion-perdida">
     <i class="bi bi-wifi-off"></i>
     No se pudo conectar con el servidor. Verifica tu conexión.
@@ -30,7 +29,6 @@
       </template>
     </div>
 
-    <!-- MODAL DE PERFIL (solo este bloque fue reemplazado) -->
     <div
       v-if="showProfile && usuario"
       class="modal-perfil"
@@ -113,7 +111,6 @@ const showMobileMenu = ref(false);
 const conexionPerdida = ref(false);
 let sesionIntervalId = null;
 
-// Para que @keydown.esc funcione sobre el contenedor, le damos focus al abrir
 const modalRef = ref(null);
 
 function toggleMobileMenu() {
@@ -127,8 +124,6 @@ function closeMobileMenu() {
 function openProfile() {
   showProfile.value = true;
   closeMobileMenu();
-  // No consultar el perfil automáticamente al abrir
-  // La información ya está disponible desde el login
 }
 
 function closeProfile() {
@@ -154,29 +149,24 @@ function cerrarSesion() {
   }
 }
 
-// Consulta el perfil actualizado desde la API
 async function consultarPerfil() {
   const token = localStorage.getItem('token');
   if (!token) return;
   try {
     const res = await axios.get('http://127.0.0.1:8000/api/sesion', {
       headers: { Authorization: 'Bearer ' + token },
-      timeout: 10000 // Aumentar timeout
+      timeout: 10000 
     });
-    // Si la API devuelve datos de usuario, actualiza el store
     if (res.data && res.data.usuario) {
       usuario.value = res.data.usuario;
       localStorage.setItem('usuario', JSON.stringify(res.data.usuario));
     }
   } catch (e) {
-    // Solo cerrar sesión si es error 401 específicamente
-    // Ignorar otros errores (timeout, conexión, etc.)
     if (e.response && e.response.status === 401) {
       console.warn('Sesión inválida - cerrando sesión');
       cerrarSesion();
     } else {
       console.warn('Error al consultar perfil (no crítico):', e.message);
-      // No hacer nada, mantener la sesión
     }
   }
 }
@@ -214,13 +204,11 @@ async function verificarSesionPeriodicamente() {
 }
 
 onMounted(() => {
-  // Solo verificar si hay usuario logueado
   if (usuario.value && usuario.value.id) {
     verificarSesionPeriodicamente();
   }
 });
 
-// Enfocar el modal al abrir para que capte Esc
 watch(showProfile, (open) => {
   if (open) {
     requestAnimationFrame(() => {
@@ -232,7 +220,6 @@ watch(showProfile, (open) => {
   }
 });
 
-// Cerrar modal cuando navegue a editar perfil
 watch(route, (newRoute) => {
   if (newRoute.path === '/editar-perfil') {
     showProfile.value = false;
@@ -366,9 +353,8 @@ body {
   transform: translateY(-1px);
 }
 
-/* ====== NUEVOS ESTILOS SOLO PARA EL MODAL ====== */
+ 
 .modal-perfil {
-  /* colores locales del modal (no globales) */
   --c-nav-primary: #2196f3;
   --c-nav-dark: #1565c0;
 
@@ -567,7 +553,6 @@ body {
   word-break: break-word;
 }
 
-/* Botón full width dentro del panel */
 .action-full {
   display: block;
   width: 100%;
@@ -631,7 +616,6 @@ body {
   }
 }
 
-/* Alerta de conexión perdida */
 .conexion-perdida {
   position: fixed;
   top: 90px;
@@ -652,7 +636,6 @@ body {
   margin-right: 8px;
 }
 
-/* Media queries para responsividad */
 @media (max-width: 768px) {
   .navbar {
     padding: 8px 20px;

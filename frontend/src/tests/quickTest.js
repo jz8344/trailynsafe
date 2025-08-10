@@ -4,24 +4,19 @@ const API_BASE = 'http://127.0.0.1:8000/api';
 
 export class QuickRouteTester {
   
-  // Test rápido desde la consola del navegador
   static async quickTest() {
     console.log('🧪 INICIANDO TEST RÁPIDO DE RUTAS PROTEGIDAS');
     console.log('='.repeat(50));
     
     try {
-      // Crear usuarios de prueba
       const { userToken, adminToken } = await this.createTestUsers();
       
-      // Test básico de rutas de usuario
       console.log('\n👤 TESTING RUTAS DE USUARIO:');
       await this.testUserRoute(userToken);
       
-      // Test básico de rutas de admin
       console.log('\n👑 TESTING RUTAS DE ADMIN:');
       await this.testAdminRoute(adminToken);
       
-      // Test de seguridad cruzada
       console.log('\n🔒 TESTING SEGURIDAD CRUZADA:');
       await this.testCrossSecurity(userToken, adminToken);
       
@@ -35,7 +30,6 @@ export class QuickRouteTester {
   static async createTestUsers() {
     const timestamp = Date.now();
     
-    // Crear usuario regular
     const userData = {
       nombre: 'TestUser',
       apellidos: 'Quick',
@@ -50,7 +44,6 @@ export class QuickRouteTester {
       contrasena: userData.contrasena
     });
     
-    // Crear admin
     const adminData = {
       nombre: 'TestAdmin',
       apellidos: 'Quick',
@@ -114,7 +107,6 @@ export class QuickRouteTester {
   }
   
   static async testCrossSecurity(userToken, adminToken) {
-    // Usuario intentando acceder a ruta de admin
     try {
       await axios.get(`${API_BASE}/usuarios`, {
         headers: { Authorization: `Bearer ${userToken}` }
@@ -128,7 +120,6 @@ export class QuickRouteTester {
       }
     }
     
-    // Admin intentando acceder a ruta de usuario con middleware específico
     try {
       await axios.get(`${API_BASE}/sesion`, {
         headers: { Authorization: `Bearer ${adminToken}` }
@@ -144,7 +135,6 @@ export class QuickRouteTester {
   }
 }
 
-// Test individual de una ruta específica
 export async function testRoute(endpoint, token, method = 'GET', data = null) {
   try {
     const config = {
@@ -168,7 +158,6 @@ export async function testRoute(endpoint, token, method = 'GET', data = null) {
   }
 }
 
-// Hacer disponible globalmente en el navegador
 if (typeof window !== 'undefined') {
   window.QuickRouteTester = QuickRouteTester;
   window.testRoute = testRoute;
