@@ -143,8 +143,9 @@
   </div>
 </template>
 
+
 <script setup>
-import { ref, reactive, onMounted, computed } from 'vue';
+import { ref, reactive, onMounted, onUnmounted, computed } from 'vue';
 import { usuario, loginUsuario } from '@/store/session.js';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
@@ -165,6 +166,49 @@ const errors = reactive({
   nombre: '',
   apellidos: '',
   telefono: ''
+});
+
+// --- Verificación periódica de sesión ---
+const conexionPerdida = ref(false);
+let sesionIntervalId = null;
+
+function verificarSesionPeriodicamente() {
+  sesionIntervalId = setInterval(async () => {
+    const token = localStorage.getItem('token');
+    if (!token) return;
+    try {
+      await axios.get('http://127.0.0.1:8000/api/sesion', {
+        headers: { Authorization: 'Bearer ' + token },
+        timeout: 9000
+      });
+      if (conexionPerdida.value) conexionPerdida.value = false;
+    } catch (e) {
+      if (e.response && e.response.status === 401) {
+        localStorage.clear();
+        sessionStorage.clear();
+        alert('Tu sesión ha expirado. Por favor inicia sesión nuevamente.');
+        window.location.replace('/login');
+      } else {
+        conexionPerdida.value = false;
+        await new Promise(res => setTimeout(res, 10));
+        conexionPerdida.value = true;
+        console.warn('Error de conexión detectado.');
+      }
+    }
+  }, 8000);
+}
+
+onMounted(() => {
+  if (usuario.value) {
+    form.nombre = usuario.value.nombre || '';
+    form.apellidos = usuario.value.apellidos || '';
+    form.telefono = usuario.value.telefono || '';
+    form.correo = usuario.value.correo || '';
+  }
+  verificarSesionPeriodicamente();
+});
+onUnmounted(() => {
+  if (sesionIntervalId) clearInterval(sesionIntervalId);
 });
 
 function capitalizeName(name) {
@@ -207,15 +251,6 @@ function validateTelefono() {
     errors.telefono = '';
   }
 }
-
-onMounted(() => {
-  if (usuario.value) {
-    form.nombre = usuario.value.nombre || '';
-    form.apellidos = usuario.value.apellidos || '';
-    form.telefono = usuario.value.telefono || '';
-    form.correo = usuario.value.correo || '';
-  }
-});
 
 async function editarPerfil() {
   validateNombre();

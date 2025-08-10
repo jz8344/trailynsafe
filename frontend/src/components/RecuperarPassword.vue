@@ -106,7 +106,8 @@
                   id="nuevaContrasena"
                   v-model="nuevaContrasena" 
                   :type="showPasswordNueva ? 'text' : 'password'" 
-                  class="form-control" 
+                  class="form-control"
+                  :class="{ 'is-valid': nuevaContrasena.length >= 6, 'is-invalid': nuevaContrasena.length > 0 && nuevaContrasena.length < 6 }"
                   placeholder="Mínimo 6 caracteres"
                   :disabled="loading"
                   @input="sanitizePassword"
@@ -119,6 +120,14 @@
                   <i :class="showPasswordNueva ? 'bi bi-eye-slash' : 'bi bi-eye'"></i>
                 </button>
               </div>
+              <div v-if="nuevaContrasena.length > 0 && nuevaContrasena.length < 6" class="invalid-feedback">
+                <i class="bi bi-exclamation-circle"></i>
+                La contraseña debe tener al menos 6 caracteres
+              </div>
+              <div v-if="nuevaContrasena.length >= 6" class="valid-feedback">
+                <i class="bi bi-check-circle"></i>
+                Contraseña válida
+              </div>
             </div>
             <div class="form-group">
               <label for="confirmarContrasena">Confirmar contraseña</label>
@@ -127,7 +136,8 @@
                   id="confirmarContrasena"
                   v-model="confirmarContrasena" 
                   :type="showPasswordConfirmar ? 'text' : 'password'" 
-                  class="form-control" 
+                  class="form-control"
+                  :class="{ 'is-valid': confirmarContrasena && confirmarContrasena === nuevaContrasena, 'is-invalid': confirmarContrasena && confirmarContrasena !== nuevaContrasena }"
                   placeholder="Repite tu nueva contraseña"
                   :disabled="loading"
                   @input="sanitizePassword"
@@ -139,6 +149,14 @@
                 >
                   <i :class="showPasswordConfirmar ? 'bi bi-eye-slash' : 'bi bi-eye'"></i>
                 </button>
+              </div>
+              <div v-if="confirmarContrasena && confirmarContrasena !== nuevaContrasena" class="invalid-feedback">
+                <i class="bi bi-exclamation-circle"></i>
+                Las contraseñas no coinciden
+              </div>
+              <div v-if="confirmarContrasena && confirmarContrasena === nuevaContrasena && nuevaContrasena.length >= 6" class="valid-feedback">
+                <i class="bi bi-check-circle"></i>
+                Las contraseñas coinciden
               </div>
             </div>
             <div class="password-strength" v-if="nuevaContrasena">
@@ -516,6 +534,27 @@ async function actualizarContrasena() {
   transition: all 0.3s ease;
   background: #f8fbff;
   box-sizing: border-box;
+}
+
+.form-control.is-valid {
+  background: #f8fff8;
+}
+.form-control.is-invalid {
+  background: #fff8f8;
+}
+.invalid-feedback,
+.valid-feedback {
+  font-size: 0.85rem;
+  margin-top: 6px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.invalid-feedback {
+  color: #f44336;
+}
+.valid-feedback {
+  color: #4caf50;
 }
 
 .form-control:focus {

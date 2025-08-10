@@ -194,7 +194,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
 
@@ -220,6 +220,43 @@ const errors = ref({
 const isFormValid = computed(() => {
   return nuevaPassword.value.length >= 6 && 
          confirmarPassword.value === nuevaPassword.value;
+});
+
+// --- Verificación periódica de sesión ---
+const conexionPerdida = ref(false);
+let sesionIntervalId = null;
+
+function verificarSesionPeriodicamente() {
+  sesionIntervalId = setInterval(async () => {
+    const token = localStorage.getItem('token');
+    if (!token) return;
+    try {
+      await axios.get('http://127.0.0.1:8000/api/sesion', {
+        headers: { Authorization: 'Bearer ' + token },
+        timeout: 9000
+      });
+      if (conexionPerdida.value) conexionPerdida.value = false;
+    } catch (e) {
+      if (e.response && e.response.status === 401) {
+        localStorage.clear();
+        sessionStorage.clear();
+        alert('Tu sesión ha expirado. Por favor inicia sesión nuevamente.');
+        window.location.replace('/login');
+      } else {
+        conexionPerdida.value = false;
+        await new Promise(res => setTimeout(res, 10));
+        conexionPerdida.value = true;
+        console.warn('Error de conexión detectado.');
+      }
+    }
+  }, 8000);
+}
+
+onMounted(() => {
+  verificarSesionPeriodicamente();
+});
+onUnmounted(() => {
+  if (sesionIntervalId) clearInterval(sesionIntervalId);
 });
 
 function goBack() {
