@@ -100,7 +100,7 @@
 <script setup>
 import logo from '/img/logo.png';
 import { ref, onMounted, onUnmounted, watch } from 'vue';
-import axios from 'axios';
+import http, { API_BASE_URL } from '@/config/api.js';
 import { useRouter, useRoute } from 'vue-router';
 import { usuario, logoutUsuario } from '@/store/session.js';
 
@@ -133,9 +133,7 @@ function closeProfile() {
 function cerrarSesion() {
   const token = localStorage.getItem('token');
   if (token) {
-    axios.post('http://127.0.0.1:8000/api/sesiones/cerrar-actual', {}, {
-      headers: { Authorization: 'Bearer ' + token }
-    }).finally(() => {
+  http.post('/sesiones/cerrar-actual', {}).finally(() => {
       logoutUsuario();
       localStorage.clear();
       sessionStorage.clear();
@@ -153,10 +151,7 @@ async function consultarPerfil() {
   const token = localStorage.getItem('token');
   if (!token) return;
   try {
-    const res = await axios.get('http://127.0.0.1:8000/api/sesion', {
-      headers: { Authorization: 'Bearer ' + token },
-      timeout: 10000 
-    });
+  const res = await http.get('/sesion');
     if (res.data && res.data.usuario) {
       usuario.value = res.data.usuario;
       localStorage.setItem('usuario', JSON.stringify(res.data.usuario));
@@ -177,10 +172,7 @@ async function verificarSesionPeriodicamente() {
     if (!token) return;
 
     try {
-      await axios.get('http://127.0.0.1:8000/api/sesion', {
-        headers: { Authorization: 'Bearer ' + token },
-        timeout: 9000 
-      });
+  await http.get('/sesion');
 
       if (conexionPerdida.value) {
         conexionPerdida.value = false;
