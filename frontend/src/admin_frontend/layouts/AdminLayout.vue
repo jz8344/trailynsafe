@@ -170,23 +170,11 @@ function getAlertIcon(type) {
 
 // Lifecycle
 onMounted(async () => {
-  // Configurar interceptores de axios
+  // Configurar interceptores de axios una sola vez
   setupAxiosInterceptors()
   
-  // Solo validar si no hay token - evitar redirecciones innecesarias
-  const token = localStorage.getItem('admin_token')
-  if (!token) {
-    router.push('/admin/login')
-    return
-  }
-  
-  // Inicializar autenticación de forma no bloqueante
-  try {
-    await initializeAuth()
-  } catch (error) {
-    console.warn('Error inicializando auth, pero continuando:', error)
-    // No redirigir aquí para evitar interferir con navegación
-  }
+  // No hacer validación automática aquí - dejar que cada página maneje su autenticación
+  console.log('AdminLayout mounted, interceptors configured')
 })
 
 // Exponer métodos para el componente padre

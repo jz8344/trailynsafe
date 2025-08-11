@@ -124,6 +124,12 @@ const routes = [
      name: 'AdminEstadisticas',
      component: () => import('@/admin_frontend/AdminEstadisticas.vue'),
      meta: { middleware: [adminAuth] }
+   },
+   {
+     path: '/admin/configuracion',
+     name: 'AdminConfiguracion',
+     component: () => import('@/admin_frontend/AdminConfiguracion.vue'),
+     meta: { middleware: [adminAuth] }
    }
 ];
 

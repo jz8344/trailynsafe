@@ -196,7 +196,7 @@
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { useRouter } from 'vue-router';
-import axios from 'axios';
+import http from '@/config/api.js';
 
 const router = useRouter();
 const step = ref(1);
@@ -231,10 +231,7 @@ function verificarSesionPeriodicamente() {
     const token = localStorage.getItem('token');
     if (!token) return;
     try {
-      await axios.get('http://127.0.0.1:8000/api/sesion', {
-        headers: { Authorization: 'Bearer ' + token },
-        timeout: 9000
-      });
+  await http.get('/sesion');
       if (conexionPerdida.value) conexionPerdida.value = false;
     } catch (e) {
       if (e.response && e.response.status === 401) {
@@ -270,10 +267,10 @@ async function validarPasswordActual() {
 
   try {
     const token = localStorage.getItem('token');
-    const res = await axios.post(
-      'http://127.0.0.1:8000/api/validar-password-actual',
+    const res = await http.post(
+      '/validar-password-actual',
       { password_actual: passwordActual.value },
-      { headers: { Authorization: `Bearer ${token}` }}
+      {}
     );
 
     tokenValidacion.value = res.data.token_validacion;
@@ -307,14 +304,14 @@ async function cambiarContrasena() {
 
   try {
     const token = localStorage.getItem('token');
-    const res = await axios.post(
-      'http://127.0.0.1:8000/api/cambiar-contrasena-autenticado',
+    const res = await http.post(
+      '/cambiar-contrasena-autenticado',
       {
         nueva_contrasena: nuevaPassword.value,
         confirmar_contrasena: confirmarPassword.value,
         token_validacion: tokenValidacion.value
       },
-      { headers: { Authorization: `Bearer ${token}` }}
+      {}
     );
 
     passSuccess.value = res.data.message || 'Contraseña cambiada exitosamente. Redirigiendo al login...';

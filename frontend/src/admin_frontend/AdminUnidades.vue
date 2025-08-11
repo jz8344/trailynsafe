@@ -30,27 +30,27 @@
 </template>
 <script setup>
 import { ref, reactive, onMounted } from 'vue';
-import axios from 'axios';
+import http from '@/config/api.js';
 
 const unidades = ref([])
 const form = reactive({id:null, matricula:'', modelo:'', capacidad:1})
-function headers(){ return { Authorization:`Bearer ${localStorage.getItem('admin_token')}` } }
+function headers(){ return {} }
 async function cargar(){
-  const res = await axios.get('http://127.0.0.1:8000/api/admin/unidades',{headers:headers()})
+  const res = await http.get('/admin/unidades', { headers: headers() })
   unidades.value = res.data
 }
 async function guardar(){
   if(form.id){
-    await axios.put(`http://127.0.0.1:8000/api/admin/unidades/${form.id}`, form,{headers:headers()})
+  await http.put(`/admin/unidades/${form.id}`, form, { headers: headers() })
   }else{
-    await axios.post('http://127.0.0.1:8000/api/admin/unidades', form,{headers:headers()})
+  await http.post('/admin/unidades', form, { headers: headers() })
   }
   reset();
   await cargar();
 }
 function edit(u){ Object.assign(form,u) }
 function reset(){ Object.assign(form,{id:null,matricula:'',modelo:'',capacidad:1}) }
-async function eliminar(id){ if(confirm('¿Eliminar?')){ await axios.delete(`http://127.0.0.1:8000/api/admin/unidades/${id}`,{headers:headers()}); await cargar(); } }
+async function eliminar(id){ if(confirm('¿Eliminar?')){ await http.delete(`/admin/unidades/${id}`, { headers: headers() }); await cargar(); } }
 
 onMounted(cargar)
 </script>

@@ -195,7 +195,7 @@
 <script setup>
 import { reactive, ref } from 'vue';
 import { useRouter } from 'vue-router';
-import axios from 'axios';
+import http from '@/config/api.js';
 import MenuNav from '@/components/MenuNav.vue';
 
 const router = useRouter();
@@ -327,7 +327,7 @@ const register = async () => {
 
   try {
   console.log('Enviando datos:', form); 
-    const response = await axios.post('http://127.0.0.1:8000/api/register', form, {
+    const response = await http.post('/register', form, {
       headers: { 'Content-Type': 'application/json' }
     });
     success.value = true;

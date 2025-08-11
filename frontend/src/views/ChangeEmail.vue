@@ -150,7 +150,7 @@
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { useRouter } from 'vue-router';
-import axios from 'axios';
+import http from '@/config/api.js';
 import { usuario, loginUsuario } from '@/store/session.js';
 
 const router = useRouter();
@@ -188,10 +188,7 @@ function verificarSesionPeriodicamente() {
     const token = localStorage.getItem('token');
     if (!token) return;
     try {
-      await axios.get('http://127.0.0.1:8000/api/sesion', {
-        headers: { Authorization: 'Bearer ' + token },
-        timeout: 9000
-      });
+  await http.get('/sesion');
       if (conexionPerdida.value) conexionPerdida.value = false;
     } catch (e) {
       if (e.response && e.response.status === 401) {
@@ -263,12 +260,10 @@ async function cambiarCorreo() {
   
   try {
     const token = localStorage.getItem('token');
-    const res = await axios.post('http://127.0.0.1:8000/api/cambiar-correo', {
+  const res = await http.post('/cambiar-correo', {
       nuevo_correo: nuevoCorreo.value,
       contrasena_actual: contrasenaActual.value
-    }, {
-      headers: { Authorization: `Bearer ${token}` }
-    });
+  });
     
     if (res.data.usuario) {
       loginUsuario(res.data.usuario);

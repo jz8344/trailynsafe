@@ -103,7 +103,7 @@
 import { ref, reactive, onMounted } from 'vue'
 import AdminLayout from './layouts/AdminLayout.vue'
 import { useAdminAuth } from '@/composables/useAdminAuth.js'
-import axios from 'axios'
+import http from '@/config/api.js'
 
 const { setupAxiosInterceptors } = useAdminAuth()
 
@@ -120,8 +120,8 @@ async function cargar() {
   try {
     loading.value = true
     const [cRes, uRes] = await Promise.all([
-      axios.get('http://127.0.0.1:8000/api/admin/choferes'),
-      axios.get('http://127.0.0.1:8000/api/admin/usuarios')
+      http.get('/admin/choferes'),
+      http.get('/admin/usuarios')
     ])
     choferes.value = cRes.data
     usuarios.value = uRes.data.filter(u => u.rol === 'usuario')
@@ -136,9 +136,9 @@ async function guardar() {
   try {
     loading.value = true
     if (form.id) {
-      await axios.put(`http://127.0.0.1:8000/api/admin/choferes/${form.id}`, form)
+  await http.put(`/admin/choferes/${form.id}`, form)
     } else {
-      await axios.post('http://127.0.0.1:8000/api/admin/choferes', form)
+  await http.post('/admin/choferes', form)
     }
     reset()
     await cargar()
@@ -164,7 +164,7 @@ function reset() {
 async function eliminar(id) {
   if (confirm('¿Eliminar este chofer?')) {
     try {
-      await axios.delete(`http://127.0.0.1:8000/api/admin/choferes/${id}`)
+  await http.delete(`/admin/choferes/${id}`)
       await cargar()
     } catch (error) {
       console.error('Error eliminando:', error)

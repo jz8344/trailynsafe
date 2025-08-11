@@ -148,7 +148,7 @@
 import { ref, reactive, onMounted, onUnmounted, computed } from 'vue';
 import { usuario, loginUsuario } from '@/store/session.js';
 import { useRouter } from 'vue-router';
-import axios from 'axios';
+import http from '@/config/api.js';
 
 const router = useRouter();
 const error = ref('');
@@ -177,10 +177,7 @@ function verificarSesionPeriodicamente() {
     const token = localStorage.getItem('token');
     if (!token) return;
     try {
-      await axios.get('http://127.0.0.1:8000/api/sesion', {
-        headers: { Authorization: 'Bearer ' + token },
-        timeout: 9000
-      });
+  await http.get('/sesion');
       if (conexionPerdida.value) conexionPerdida.value = false;
     } catch (e) {
       if (e.response && e.response.status === 401) {
@@ -266,15 +263,7 @@ async function editarPerfil() {
   try {
     const token = localStorage.getItem('token');
     const { nombre, apellidos, telefono } = form;
-    const res = await axios.post(
-      'http://127.0.0.1:8000/api/editar-perfil',
-      { nombre, apellidos, telefono },
-      {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      }
-    );
+  const res = await http.post('/editar-perfil', { nombre, apellidos, telefono });
     if (res.data.usuario) {
       loginUsuario(res.data.usuario);
       success.value = 'Perfil actualizado correctamente.';

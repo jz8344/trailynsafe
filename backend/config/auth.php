@@ -46,7 +46,7 @@ return [
         ],
         'admin-sanctum' => [
             'driver' => 'sanctum',
-            'provider' => 'usuarios',
+            'provider' => 'admins',
         ],
     ],
 
@@ -76,6 +76,11 @@ return [
         'usuarios' => [
             'driver' => 'eloquent',
             'model' => App\Models\Usuario::class,
+        ],
+
+        'admins' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\Admin::class,
         ],
 
         // 'users' => [

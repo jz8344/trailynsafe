@@ -191,7 +191,7 @@
 <script setup>
 import { ref, computed } from 'vue';
 import { useRouter } from 'vue-router';
-import axios from 'axios';
+import http from '@/config/api.js';
 
 const router = useRouter();
 const step = ref(1);
@@ -228,10 +228,10 @@ async function validarPasswordActual() {
 
   try {
     const token = localStorage.getItem('token');
-    const res = await axios.post(
-      'http://127.0.0.1:8000/api/validar-password-actual',
+    const res = await http.post(
+      '/validar-password-actual',
       { password_actual: passwordActual.value },
-      { headers: { Authorization: `Bearer ${token}` }}
+      {}
     );
 
     tokenValidacion.value = res.data.token_validacion;
@@ -265,14 +265,14 @@ async function cambiarContrasena() {
 
   try {
     const token = localStorage.getItem('token');
-    const res = await axios.post(
-      'http://127.0.0.1:8000/api/cambiar-contrasena-autenticado',
+    const res = await http.post(
+      '/cambiar-contrasena-autenticado',
       {
         nueva_contrasena: nuevaPassword.value,
         confirmar_contrasena: confirmarPassword.value,
         token_validacion: tokenValidacion.value
       },
-      { headers: { Authorization: `Bearer ${token}` }}
+      {}
     );
 
     success.value = res.data.message;

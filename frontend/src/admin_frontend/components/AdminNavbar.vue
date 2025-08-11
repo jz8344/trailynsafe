@@ -307,11 +307,17 @@ onMounted(() => {
   darkMode.value = stored
   document.body.setAttribute('data-bs-theme', stored ? 'dark' : 'light')
 
-  // Bootstrap tooltips initialization
-  const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-  tooltipTriggerList.map(function (tooltipTriggerEl) {
-    return new bootstrap.Tooltip(tooltipTriggerEl)
-  })
+  // Bootstrap tooltips initialization (with error handling)
+  try {
+    const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+    tooltipTriggerList.map(function (tooltipTriggerEl) {
+      if (typeof window !== 'undefined' && window.bootstrap && window.bootstrap.Tooltip) {
+        return new window.bootstrap.Tooltip(tooltipTriggerEl)
+      }
+    })
+  } catch (error) {
+    console.warn('Bootstrap tooltips not available:', error)
+  }
 
   // Keyboard shortcuts
   window.addEventListener('keydown', e => {

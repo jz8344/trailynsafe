@@ -1,16 +1,15 @@
 import { ref, computed } from 'vue'
-import axios from 'axios'
+import http, { API_BASE_URL } from '@/config/api.js'
 import { admin, loginAdmin, logoutAdmin } from '@/store/session.js'
 
 const loading = ref(false)
 const error = ref(null)
 
-// Configurar axios para incluir el token del admin automáticamente
 const setupAxiosInterceptors = () => {
-  axios.interceptors.request.use(
+  http.interceptors.request.use(
     (config) => {
       const token = localStorage.getItem('admin_token')
-      if (token && config.url?.includes('/admin/')) {
+      if (token) {
         config.headers.Authorization = `Bearer ${token}`
       }
       return config
@@ -20,13 +19,17 @@ const setupAxiosInterceptors = () => {
     }
   )
 
-  axios.interceptors.response.use(
+  // Interceptor para respuestas
+  http.interceptors.response.use(
     (response) => response,
     (error) => {
-      if (error.response?.status === 401 && error.config?.url?.includes('/admin/')) {
-        // Token expirado o inválido
+      if (error.response?.status === 401) {
+        // Token expirado o inválido para cualquier petición de admin
+        console.log('Token inválido o expirado, redirigiendo al login')
         logoutAdmin()
-        window.location.href = '/admin/login'
+        if (window.location.pathname.startsWith('/admin/') && window.location.pathname !== '/admin/login') {
+          window.location.href = '/admin/login'
+        }
       }
       return Promise.reject(error)
     }
@@ -56,9 +59,10 @@ export const useAdminAuth = () => {
       loading.value = true
       console.log('Validando sesión con token:', token)
       
-      const response = await axios.get('http://127.0.0.1:8000/api/admin/sesion', {
+      // Asegurar que el token se envíe en la petición
+      const response = await http.get('/admin/sesion', {
         headers: {
-          Authorization: `Bearer ${token}`
+          'Authorization': `Bearer ${token}`
         }
       })
       
@@ -89,11 +93,7 @@ export const useAdminAuth = () => {
     }
 
     try {
-      const response = await axios.get('http://127.0.0.1:8000/api/admin/validar-sesion', {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      })
+      const response = await http.get('/admin/validar-sesion')
       return response.data.authenticated === true
     } catch (err) {
       console.error('Error validando sesión:', err)
@@ -108,8 +108,8 @@ export const useAdminAuth = () => {
       
       console.log('Intentando login con:', { email })
       
-      const response = await axios.post('http://127.0.0.1:8000/api/admin/login', {
-        correo: email, // Cambiar de 'credentials' a los campos exactos
+      const response = await http.post('/admin/login', {
+        email: email, // Cambiar de 'correo' a 'email' para coincidir con el backend
         password: password
       })
       
@@ -136,7 +136,7 @@ export const useAdminAuth = () => {
   const logout = async () => {
     try {
       // Intentar cerrar sesión en el servidor
-      await axios.post('/api/admin/sesiones/cerrar-actual')
+      await http.post('/admin/sesiones/cerrar-actual')
     } catch (err) {
       console.warn('Error cerrando sesión en el servidor:', err)
     } finally {
@@ -150,7 +150,7 @@ export const useAdminAuth = () => {
       loading.value = true
       error.value = null
       
-      const response = await axios.post('/api/admin/editar-perfil', profileData)
+      const response = await http.post('/admin/editar-perfil', profileData)
       
       if (response.data.admin) {
         loginAdmin(response.data.admin)
@@ -172,7 +172,7 @@ export const useAdminAuth = () => {
       loading.value = true
       error.value = null
       
-      const response = await axios.post('/api/admin/actualizar-contrasena', passwordData)
+      const response = await http.post('/admin/actualizar-contrasena', passwordData)
       
       return { success: true, message: response.data.message }
     } catch (err) {

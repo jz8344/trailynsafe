@@ -169,6 +169,28 @@
                     </button>
                   </div>
                 </div>
+                <div v-else class="col-12">
+                  <label class="form-label">Nueva Contraseña (opcional)</label>
+                  <div class="input-group">
+                    <input 
+                      v-model="form.contrasena" 
+                      :type="showPwd ? 'text' : 'password'" 
+                      class="form-control" 
+                      placeholder="Dejar vacío para mantener la contraseña actual"
+                      minlength="6" 
+                    />
+                    <button 
+                      type="button" 
+                      class="btn btn-outline-secondary" 
+                      @click="showPwd = !showPwd"
+                    >
+                      <i :class="showPwd ? 'bi bi-eye-slash' : 'bi bi-eye'"></i>
+                    </button>
+                  </div>
+                  <div class="form-text">
+                    <small class="text-muted">Si deseas cambiar la contraseña, debe tener al menos 6 caracteres</small>
+                  </div>
+                </div>
               </div>
             </div>
             <div class="modal-footer">
@@ -189,7 +211,7 @@
 import { ref, computed, onMounted } from 'vue'
 import AdminLayout from './layouts/AdminLayout.vue'
 import { useAdminAuth } from '@/composables/useAdminAuth.js'
-import axios from 'axios'
+import http from '@/config/api.js'
 
 const { setupAxiosInterceptors } = useAdminAuth()
 
@@ -237,7 +259,7 @@ const cargar = async () => {
   loading.value = true
   error.value = null
   try {
-    const response = await axios.get('http://127.0.0.1:8000/api/admin/usuarios')
+    const response = await http.get('/admin/usuarios')
     usuarios.value = response.data
   } catch (e) {
     error.value = 'Error cargando usuarios'
@@ -295,9 +317,22 @@ const guardar = async () => {
   
   try {
     if (editando.value) {
-      await axios.put(`http://127.0.0.1:8000/api/admin/usuarios/${form.value.id}`, form.value)
+      // Para edición, solo enviar los campos que pueden cambiar
+      const updateData = {
+        nombre: form.value.nombre,
+        apellidos: form.value.apellidos,
+        telefono: form.value.telefono,
+      }
+      
+      // Solo incluir contraseña si se proporcionó una nueva
+      if (form.value.contrasena && form.value.contrasena.length >= 6) {
+        updateData.contrasena = form.value.contrasena
+      }
+      
+      await http.put(`/admin/usuarios/${form.value.id}`, updateData)
     } else {
-      await axios.post('http://127.0.0.1:8000/api/admin/usuarios', form.value)
+      // Para creación, enviar todos los datos
+      await http.post('/admin/usuarios', form.value)
     }
     await cargar()
     cerrarModal()
@@ -314,7 +349,7 @@ const borrarSeleccionados = async () => {
   
   for (const id of seleccionados.value) {
     try {
-      await axios.delete(`http://127.0.0.1:8000/api/admin/usuarios/${id}`)
+      await http.delete(`/admin/usuarios/${id}`)
     } catch (e) {
       console.error('Error eliminando usuario:', e)
     }

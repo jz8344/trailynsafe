@@ -199,7 +199,7 @@
 <script setup>
 import { ref, computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import axios from 'axios';
+import http from '@/config/api.js';
 import MenuNav from '@/components/MenuNav.vue';
 
 const route = useRoute();
@@ -282,7 +282,7 @@ async function enviarCodigo() {
   error.value = '';
   success.value = '';
   try {
-    const response = await axios.post('http://127.0.0.1:8000/api/enviar-codigo', {
+  const response = await http.post('/enviar-codigo', {
       correo: correo.value
     });
     if (response.data.success === true) {
@@ -308,7 +308,7 @@ async function validarCodigo() {
   error.value = '';
   success.value = '';
   try {
-    await axios.post('http://127.0.0.1:8000/api/validar-codigo', {
+  await http.post('/validar-codigo', {
       correo: correo.value,
       codigo: codigo.value
     });
@@ -335,7 +335,7 @@ async function actualizarContrasena() {
   error.value = '';
   success.value = '';
   try {
-    await axios.post('http://127.0.0.1:8000/api/cambiar-contrasena', {
+  await http.post('/cambiar-contrasena', {
       correo: correo.value,
       codigo: codigo.value,
       nueva_contrasena: nuevaContrasena.value,
@@ -344,9 +344,7 @@ async function actualizarContrasena() {
     const token = localStorage.getItem('token');
     if (token) {
       try {
-        await axios.delete('http://127.0.0.1:8000/api/sesiones', {
-          headers: { Authorization: 'Bearer ' + token }
-        });
+  await http.delete('/sesiones');
       } catch (e) {}
       localStorage.removeItem('token');
     }

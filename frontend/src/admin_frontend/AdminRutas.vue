@@ -56,19 +56,19 @@
 </template>
 <script setup>
 import { ref, reactive, onMounted } from 'vue';
-import axios from 'axios';
+import http from '@/config/api.js';
 
 const rutas = ref([])
 const choferes = ref([])
 const unidades = ref([])
 const form = reactive({id:null,nombre:'',chofer_id:'',unidad_id:'',horario:'',inicio:'',fin:'',rango:0,estado:'inactiva'})
 
-function headers(){ return { Authorization:`Bearer ${localStorage.getItem('admin_token')}` } }
+function headers(){ return {} }
 async function cargar(){
   const [rRes,cRes,uRes] = await Promise.all([
-    axios.get('http://127.0.0.1:8000/api/admin/rutas',{headers:headers()}),
-    axios.get('http://127.0.0.1:8000/api/admin/choferes',{headers:headers()}),
-    axios.get('http://127.0.0.1:8000/api/admin/unidades',{headers:headers()}),
+    http.get('/admin/rutas',{headers:headers()}),
+    http.get('/admin/choferes',{headers:headers()}),
+    http.get('/admin/unidades',{headers:headers()}),
   ])
   rutas.value = rRes.data
   choferes.value = cRes.data
@@ -76,16 +76,16 @@ async function cargar(){
 }
 async function guardar(){
   if(form.id){
-    await axios.put(`http://127.0.0.1:8000/api/admin/rutas/${form.id}`, form,{headers:headers()})
+  await http.put(`/admin/rutas/${form.id}`, form,{headers:headers()})
   }else{
-    await axios.post('http://127.0.0.1:8000/api/admin/rutas', form,{headers:headers()})
+  await http.post('/admin/rutas', form,{headers:headers()})
   }
   reset();
   await cargar();
 }
 function edit(r){ Object.assign(form,r) }
 function reset(){ Object.assign(form,{id:null,nombre:'',chofer_id:'',unidad_id:'',horario:'',inicio:'',fin:'',rango:0,estado:'inactiva'}) }
-async function eliminar(id){ if(confirm('¿Eliminar?')){ await axios.delete(`http://127.0.0.1:8000/api/admin/rutas/${id}`,{headers:headers()}); await cargar(); } }
+async function eliminar(id){ if(confirm('¿Eliminar?')){ await http.delete(`/admin/rutas/${id}`,{headers:headers()}); await cargar(); } }
 
 onMounted(cargar)
 </script>

@@ -105,25 +105,12 @@ async function onCardClick(key) {
     console.log('Navigating to:', route)
     
     try {
-      // Usar replace si ya estamos en esa ruta, push si es diferente
-      const currentPath = router.currentRoute.value.path
-      console.log('Current path:', currentPath)
-      
-      if (currentPath === route) {
-        console.log('Same route, forcing refresh with replace')
-        await router.replace({ path: route, query: { refresh: Date.now() } })
-      } else {
-        console.log('Different route, using push')
-        await router.push(route)
-      }
-      
+      await router.push(route)
       console.log('Navigation successful to:', route)
     } catch (error) {
       console.error('Navigation error:', error)
     } finally {
-      setTimeout(() => {
-        loading.value = false
-      }, 100)
+      loading.value = false
     }
   } else {
     console.error('No route found for key:', key)

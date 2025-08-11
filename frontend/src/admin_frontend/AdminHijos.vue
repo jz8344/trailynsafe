@@ -121,7 +121,7 @@
 import { ref, reactive, onMounted } from 'vue'
 import AdminLayout from './layouts/AdminLayout.vue'
 import { useAdminAuth } from '@/composables/useAdminAuth.js'
-import axios from 'axios'
+import http from '@/config/api.js'
 
 const { setupAxiosInterceptors } = useAdminAuth()
 
@@ -141,8 +141,8 @@ async function cargar() {
   try {
     loading.value = true
     const [hRes, uRes] = await Promise.all([
-      axios.get('http://127.0.0.1:8000/api/admin/hijos'),
-      axios.get('http://127.0.0.1:8000/api/admin/usuarios')
+      http.get('/admin/hijos'),
+      http.get('/admin/usuarios')
     ])
     hijos.value = hRes.data
     padres.value = uRes.data.filter(u => u.rol === 'usuario')
@@ -157,9 +157,9 @@ async function guardar() {
   try {
     loading.value = true
     if (form.id) {
-      await axios.put(`http://127.0.0.1:8000/api/admin/hijos/${form.id}`, form)
+  await http.put(`/admin/hijos/${form.id}`, form)
     } else {
-      await axios.post('http://127.0.0.1:8000/api/admin/hijos', form)
+  await http.post('/admin/hijos', form)
     }
     reset()
     await cargar()
@@ -188,7 +188,7 @@ function reset() {
 async function eliminar(id) {
   if (confirm('¿Eliminar este hijo?')) {
     try {
-      await axios.delete(`http://127.0.0.1:8000/api/admin/hijos/${id}`)
+  await http.delete(`/admin/hijos/${id}`)
       await cargar()
     } catch (error) {
       console.error('Error eliminando:', error)

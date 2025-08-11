@@ -122,7 +122,7 @@
 <script setup>
 import { reactive, ref } from 'vue';
 import { useRouter } from 'vue-router';
-import axios from 'axios';
+import http from '@/config/api.js';
 import MenuNav from '@/components/MenuNav.vue';
 import { loginUsuario } from '@/store/session.js';
 
@@ -154,7 +154,7 @@ async function login() {
   loading.value = true;
   
   try {
-    const res = await axios.post('http://10.216.90.178:8000/api/login', form);
+  const res = await http.post('/login', form);
     
     if (res.data.token && res.data.usuario) {
       localStorage.setItem('token', res.data.token);

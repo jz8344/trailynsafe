@@ -46,7 +46,7 @@ class AdminController extends Controller
     public function login(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'correo' => 'required|email',
+            'email' => 'required|email',
             'password' => 'required|string',
         ]);
 
@@ -54,7 +54,7 @@ class AdminController extends Controller
             return response()->json($validator->errors(), 422);
         }
 
-        $admin = Admin::where('email', $request->correo)->first();
+        $admin = Admin::where('email', $request->email)->first();
 
         if (!$admin || !Hash::check($request->password, $admin->password)) {
             return response()->json(['error' => 'Credenciales inválidas'], 401);
@@ -85,7 +85,7 @@ class AdminController extends Controller
 
     public function editarPerfil(Request $request)
     {
-        $admin = Auth::guard('sanctum')->user();
+        $admin = Auth::guard('admin-sanctum')->user();
 
         if (!$admin instanceof Admin) {
             return response()->json(['error' => 'No autorizado'], 401);
@@ -119,7 +119,7 @@ class AdminController extends Controller
 
     public function newPassword(Request $request)
     {
-        $admin = Auth::guard('sanctum')->user();
+        $admin = Auth::guard('admin-sanctum')->user();
 
         if (!$admin instanceof Admin) {
             return response()->json(['error' => 'No autorizado'], 401);
@@ -219,9 +219,17 @@ class AdminController extends Controller
 
     public function obtenerSesion(Request $request)
     {
-        $admin = Auth::guard('sanctum')->user();
+        // Intentar obtener el usuario del token Sanctum
+        $user = Auth::guard('admin-sanctum')->user();
         
-        if (!$admin instanceof Admin) {
+        // Verificar si es un admin buscando en la tabla admins
+        if ($user && get_class($user) === 'App\Models\Admin') {
+            $admin = $user;
+        } else {
+            $admin = null;
+        }
+        
+        if (!$admin) {
             return response()->json(['error' => 'No autorizado'], 401);
         }
 
@@ -234,12 +242,14 @@ class AdminController extends Controller
 
     public function validarSesion(Request $request)
     {
-        $admin = Auth::guard('sanctum')->user();
+        // Intentar obtener el usuario del token Sanctum
+        $user = Auth::guard('admin-sanctum')->user();
         
-        if (!$admin instanceof Admin) {
-            return response()->json(['authenticated' => false], 401);
+        // Verificar si es un admin
+        if ($user && get_class($user) === 'App\Models\Admin') {
+            return response()->json(['authenticated' => true]);
         }
-
-        return response()->json(['authenticated' => true]);
+        
+        return response()->json(['authenticated' => false], 401);
     }
 }

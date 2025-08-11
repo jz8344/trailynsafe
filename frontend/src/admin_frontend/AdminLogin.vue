@@ -93,7 +93,7 @@
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { loginAdmin } from '@/store/session.js'
-import axios from 'axios'
+import http from '@/config/api.js'
 
 const router = useRouter()
 
@@ -116,7 +116,7 @@ async function login() {
 
   try {
     // Petición directa con axios
-    const response = await axios.post('http://127.0.0.1:8000/api/admin/login', {
+  const response = await http.post('/admin/login', {
       email: form.value.email,
       password: form.value.password
     })

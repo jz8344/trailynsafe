@@ -40,7 +40,7 @@ Route::middleware(['auth:sanctum', \App\Http\Middleware\CheckRoleUsuario::class]
 });
 
 // Rutas protegidas para administradores
-Route::middleware(['auth:sanctum'])->group(function () {
+Route::middleware(['auth:admin-sanctum'])->group(function () {
     Route::get('/admin/sesion', [AdminController::class, 'obtenerSesion']);
     Route::get('/admin/validar-sesion', [AdminController::class, 'validarSesion']);
     Route::get('/usuarios', [AdminController::class, 'list']);

@@ -148,7 +148,7 @@
 </template>
 
 <script>
-import axios from 'axios'
+import http from '@/config/api.js'
 
 export default {
   name: 'AdminRegister',
@@ -173,7 +173,7 @@ export default {
       this.success = null
 
       try {
-        await axios.post('http://127.0.0.1:8000/api/admin/register', this.form)
+  await http.post('/admin/register', this.form)
         
         this.success = 'Cuenta creada exitosamente. Redirigiendo al login...'
         

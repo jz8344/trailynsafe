@@ -134,7 +134,7 @@
 
 <script setup>
 import { ref, reactive, onMounted } from 'vue';
-import axios from 'axios';
+import http from '@/config/api.js';
 
 const cargando = ref(false);
 const totales = reactive({
@@ -161,11 +161,11 @@ async function cargarDatos() {
   try {
     // Cargar datos de todas las entidades
     const [usuariosRes, hijosRes, choferesRes, unidadesRes, rutasRes] = await Promise.all([
-      axios.get('http://127.0.0.1:8000/api/admin/usuarios', { headers: headers() }),
-      axios.get('http://127.0.0.1:8000/api/admin/hijos', { headers: headers() }),
-      axios.get('http://127.0.0.1:8000/api/admin/choferes', { headers: headers() }),
-      axios.get('http://127.0.0.1:8000/api/admin/unidades', { headers: headers() }),
-      axios.get('http://127.0.0.1:8000/api/admin/rutas', { headers: headers() })
+      http.get('/admin/usuarios', { headers: headers() }),
+      http.get('/admin/hijos', { headers: headers() }),
+      http.get('/admin/choferes', { headers: headers() }),
+      http.get('/admin/unidades', { headers: headers() }),
+      http.get('/admin/rutas', { headers: headers() })
     ]);
 
     // Actualizar totales
