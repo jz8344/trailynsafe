@@ -41,14 +41,7 @@ const routes = [
      },
      component: () => import('../views/EditarPerfil.vue'),
    },  
-   {
-     path: '/notificaciones',
-     name: 'Notificaciones',
-     meta: {
-       middleware: [auth]
-     },
-       component: () => import('@/views/Notificaciones.vue')
-   },
+
    {
      path: '/cambiar-email',
      name: 'ChangeEmail',

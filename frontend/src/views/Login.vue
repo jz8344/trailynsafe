@@ -154,7 +154,7 @@ async function login() {
   loading.value = true;
   
   try {
-    const res = await axios.post('http://127.0.0.1:8000/api/login', form);
+    const res = await axios.post('http://10.216.90.178:8000/api/login', form);
     
     if (res.data.token && res.data.usuario) {
       localStorage.setItem('token', res.data.token);
