@@ -11,17 +11,18 @@
     <header class="w-full bg-white/80 backdrop-blur border-b border-purple-200/60 shadow-sm dark:bg-neutral-800/80 dark:border-neutral-700" x-data="nav()">
         <nav class="flex items-center gap-3 px-3 md:px-5 h-12 text-sm select-none">
             <!-- App Switcher -->
+            <!--Cambiar los colores de los span a white-->
             <button @click="toggleAppDrawer" class="relative group p-2 rounded hover:bg-purple-100 dark:hover:bg-neutral-700 focus:outline-none focus-visible:ring-2 ring-purple-400" aria-label="Aplicaciones" title="Aplicaciones (Ctrl+Alt+A)">
                 <div class="grid grid-cols-3 gap-0.5 w-5 h-5">
-                    <span class="w-1.5 h-1.5 rounded bg-purple-500 group-hover:scale-110 transition"></span>
-                    <span class="w-1.5 h-1.5 rounded bg-purple-400 group-hover:scale-110 transition"></span>
-                    <span class="w-1.5 h-1.5 rounded bg-purple-300 group-hover:scale-110 transition"></span>
-                    <span class="w-1.5 h-1.5 rounded bg-purple-400 group-hover:scale-110 transition"></span>
-                    <span class="w-1.5 h-1.5 rounded bg-purple-500 group-hover:scale-110 transition"></span>
-                    <span class="w-1.5 h-1.5 rounded bg-purple-400 group-hover:scale-110 transition"></span>
-                    <span class="w-1.5 h-1.5 rounded bg-purple-300 group-hover:scale-110 transition"></span>
-                    <span class="w-1.5 h-1.5 rounded bg-purple-400 group-hover:scale-110 transition"></span>
-                    <span class="w-1.5 h-1.5 rounded bg-purple-500 group-hover:scale-110 transition"></span>
+                    <span class="w-1.5 h-1.5 rounded bg-white group-hover:scale-110 transition"></span>
+                    <span class="w-1.5 h-1.5 rounded bg-white group-hover:scale-110 transition"></span>
+                    <span class="w-1.5 h-1.5 rounded bg-white group-hover:scale-110 transition"></span>
+                    <span class="w-1.5 h-1.5 rounded bg-white group-hover:scale-110 transition"></span>
+                    <span class="w-1.5 h-1.5 rounded bg-white group-hover:scale-110 transition"></span>
+                    <span class="w-1.5 h-1.5 rounded bg-white group-hover:scale-110 transition"></span>
+                    <span class="w-1.5 h-1.5 rounded bg-white group-hover:scale-110 transition"></span>
+                    <span class="w-1.5 h-1.5 rounded bg-white group-hover:scale-110 transition"></span>
+                    <span class="w-1.5 h-1.5 rounded bg-white group-hover:scale-110 transition"></span>
                 </div>
             </button>
 
@@ -32,13 +33,9 @@
                 <span class="text-gray-500 dark:text-gray-400">Inicio</span>
             </div>
 
-            <!-- Buscador global -->
-            <div class="flex-1 flex justify-center">
-                <div class="relative w-full max-w-md">
-                    <input id="globalSearch" x-ref="search" @keydown.slash.prevent="focusSearch" type="text" placeholder="Buscar ( / )" class="w-full pl-9 pr-8 py-1.5 rounded-md bg-white border border-purple-200 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-purple-400 shadow-inner dark:bg-neutral-700 dark:border-neutral-600 dark:placeholder-neutral-400 dark:text-neutral-100" />
-                    <svg class="w-4 h-4 absolute left-2.5 top-1/2 -translate-y-1/2 text-purple-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.35-4.35" stroke-linecap="round"/></svg>
-                    <kbd class="hidden md:flex absolute right-1 top-1/2 -translate-y-1/2 text-[10px] px-1 py-0.5 rounded border bg-white text-gray-500 border-gray-300 dark:bg-neutral-600 dark:border-neutral-500 dark:text-neutral-200">Ctrl K</kbd>
-                </div>
+            <!--SEPARAR ACCIONES HACIA EL LADO DERECHO-->
+            <div class="hidden md:flex items-center gap-2 ml-auto">
+
             </div>
 
             <!-- Acciones lado derecho -->
@@ -97,44 +94,22 @@
     <div class="p-8 overflow-y-auto h-[calc(100vh-4rem)] scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-transparent">
         <div class="grid grid-cols-6 gap-6 max-w-7xl mx-auto">
             <!-- Discuss -->
-            <div class="bg-white p-6 rounded-lg shadow-md flex flex-col items-center justify-center">
-                <img src="https://raw.githubusercontent.com/odoo/odoo/18.0/addons/mail/static/description/icon.png" alt="Discuss" class="w-16 h-16 mb-2">
-                <p class="text-gray-800 font-medium">Discuss</p>
-            </div>
-
+  
             <!-- Sales -->
             <div class="bg-white p-6 rounded-lg shadow-md flex flex-col items-center justify-center">
                 <img src="https://raw.githubusercontent.com/odoo/odoo/18.0/addons/sale/static/description/icon.png" alt="Sales" class="w-16 h-16 mb-2">
-                <p class="text-gray-800 font-medium">Sales</p>
+                <p class="text-gray-800 font-medium">Base de datos</p>
             </div>
-            <!-- Dashboards -->
-            <div class="bg-white p-6 rounded-lg shadow-md flex flex-col items-center justify-center">
-                <img src="https://raw.githubusercontent.com/odoo/odoo/18.0/addons/board/static/description/icon.png" alt="Dashboards" class="w-16 h-16 mb-2">
-                <p class="text-gray-800 font-medium">Dashboards</p>
-            </div>
+       
 
-
-
-            <!-- Timesheets -->
-            <div class="bg-white p-6 rounded-lg shadow-md flex flex-col items-center justify-center">
-                <img src="https://raw.githubusercontent.com/odoo/odoo/18.0/addons/hr_timesheet/static/description/icon.png" alt="Timesheets" class="w-16 h-16 mb-2">
-                <p class="text-gray-800 font-medium">Timesheets</p>
-            </div>
-
-
-            <!-- Email Marketing -->
-            <div class="bg-white p-6 rounded-lg shadow-md flex flex-col items-center justify-center">
-                <img src="https://raw.githubusercontent.com/odoo/odoo/18.0/addons/mass_mailing/static/description/icon.png" alt="Email Marketing" class="w-16 h-16 mb-2">
-                <p class="text-gray-800 font-medium">Email Marketing</p>
-            </div>
-            <!-- Events -->
-
+    
             <!-- Purchase -->
 
             <!-- Users (added using HR icon for group representation) -->
             <div class="bg-white p-6 rounded-lg shadow-md flex flex-col items-center justify-center relative group">
-                <img src="https://raw.githubusercontent.com/odoo/odoo/18.0/addons/hr/static/description/icon.png" alt="Users" class="w-16 h-16 mb-2">
-                <p class="text-gray-800 font-medium">Users</p>
+
+    <img src="frontend/public/img/USUARIOS.png" alt="Usuarios" class="w-16 h-16 mb-2">
+                <p class="text-gray-800 font-medium">Usuarios</p>
                 <span class="absolute top-1 right-1 text-[10px] bg-purple-500 text-white px-1 rounded opacity-0 group-hover:opacity-100 transition">Nuevo</span>
             </div>
         </div>

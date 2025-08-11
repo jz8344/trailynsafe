@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Admin;
 use App\Models\Usuario;
 use App\Models\Sesion;
 use Illuminate\Http\Request;
@@ -14,7 +15,7 @@ class AdminController extends Controller
 {
     public function list()
     {
-        return response()->json(Usuario::where('rol', 'admin')->get());
+        return response()->json(Admin::all());
     }
 
     public function register(Request $request)
@@ -22,7 +23,7 @@ class AdminController extends Controller
         $validator = Validator::make($request->all(), [
             'nombre' => 'required|string',
             'apellidos' => 'required|string',
-            'email' => 'required|email|unique:usuarios,correo',
+            'email' => 'required|email|unique:admins,email',
             'password' => 'required|string|min:6',
         ]);
 
@@ -30,13 +31,12 @@ class AdminController extends Controller
             return response()->json($validator->errors(), 422);
         }
 
-        $admin = Usuario::create([
+        $admin = Admin::create([
             'nombre' => $request->nombre,
             'apellidos' => $request->apellidos,
-            'telefono' => $request->telefono ?? '',
-            'correo' => $request->email,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
             'rol' => 'admin',
-            'contrasena' => Hash::make($request->password),
             'fecha_registro' => now(),
         ]);
 
@@ -46,7 +46,7 @@ class AdminController extends Controller
     public function login(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'email' => 'required|email',
+            'correo' => 'required|email',
             'password' => 'required|string',
         ]);
 
@@ -54,9 +54,9 @@ class AdminController extends Controller
             return response()->json($validator->errors(), 422);
         }
 
-        $admin = Usuario::where('correo', $request->email)->where('rol', 'admin')->first();
+        $admin = Admin::where('email', $request->correo)->first();
 
-        if (!$admin || !Hash::check($request->password, $admin->contrasena)) {
+        if (!$admin || !Hash::check($request->password, $admin->password)) {
             return response()->json(['error' => 'Credenciales inválidas'], 401);
         }
 
@@ -66,58 +66,64 @@ class AdminController extends Controller
 
         Sesion::create([
             'usuario_id' => $admin->id,
-            'token'      => $token,
-            'token_id'   => $tokenId,
+            'token' => $token,
+            'token_id' => $tokenId,
             'user_agent' => $request->header('User-Agent'),
             'ip_address' => $request->ip(),
-            'inicio'     => now(),
-            'estado'     => 'activa',
+            'inicio' => now(),
+            'estado' => 'activa',
         ]);
 
         return response()->json([
-            'token'      => $token,
-            'admin'      => $admin,
+            'token' => $token,
+            'admin' => $admin,
             'token_type' => 'Bearer',
-            'user_type'  => 'admin'
+            'user_type' => 'admin',
+            'success' => true
         ]);
     }
 
     public function editarPerfil(Request $request)
     {
-        $user = Auth::guard('admin-sanctum')->user();
+        $admin = Auth::guard('sanctum')->user();
+
+        if (!$admin instanceof Admin) {
+            return response()->json(['error' => 'No autorizado'], 401);
+        }
 
         $validator = Validator::make($request->all(), [
-            'nombre'     => 'sometimes|required|string',
-            'apellidos'  => 'sometimes|required|string',
+            'nombre' => 'sometimes|required|string|max:255',
+            'apellidos' => 'sometimes|required|string|max:255',
         ]);
 
         if ($validator->fails()) {
-            return response()->json($validator->errors(), 422);
+            return response()->json(['error' => $validator->errors()->first()], 422);
         }
 
         $datos = [];
 
         if ($request->has('nombre')) {
-            $datos['nombre'] = ucwords(strtolower($request->nombre));
+            $datos['nombre'] = ucwords(strtolower(trim($request->nombre)));
         }
         if ($request->has('apellidos')) {
-            $datos['apellidos'] = ucwords(strtolower($request->apellidos));
-        }
-        if ($request->has('telefono')) {
-            $datos['telefono'] = $request->telefono;
+            $datos['apellidos'] = ucwords(strtolower(trim($request->apellidos)));
         }
 
-        $user->update($datos);
+        $admin->update($datos);
 
         return response()->json([
             'message' => 'Perfil actualizado correctamente.',
-            'admin' => $user->fresh()
+            'admin' => $admin->fresh()
         ]);
     }
 
     public function newPassword(Request $request)
     {
-        $user = Auth::guard('admin-sanctum')->user();
+        $admin = Auth::guard('sanctum')->user();
+
+        if (!$admin instanceof Admin) {
+            return response()->json(['error' => 'No autorizado'], 401);
+        }
 
         $validator = Validator::make($request->all(), [
             'password_actual' => 'required|string',
@@ -128,19 +134,19 @@ class AdminController extends Controller
             return response()->json($validator->errors(), 422);
         }
 
-        if (!Hash::check($request->password_actual, $user->contrasena)) {
+        if (!Hash::check($request->password_actual, $admin->password)) {
             return response()->json(['error' => 'La contraseña actual es incorrecta.'], 400);
         }
 
-        $user->contrasena = Hash::make($request->nueva_password);
-        $user->save();
+        $admin->password = Hash::make($request->nueva_password);
+        $admin->save();
 
         return response()->json(['message' => 'Contraseña actualizada correctamente.']);
     }
 
     public function usersIndex()
     {
-        $users = Usuario::where('rol', '!=', 'admin')->orderByDesc('id')->get();
+        $users = Usuario::orderByDesc('id')->get();
         return response()->json($users);
     }
 
@@ -171,7 +177,7 @@ class AdminController extends Controller
     public function updateUser(Request $request, $id)
     {
         $user = Usuario::find($id);
-        if (!$user || $user->rol === 'admin') {
+        if (!$user) {
             return response()->json(['error' => 'Usuario no encontrado.'], 404);
         }
         $validator = Validator::make($request->all(), [
@@ -204,10 +210,36 @@ class AdminController extends Controller
     public function deleteUser($id)
     {
         $user = Usuario::find($id);
-        if (!$user || $user->rol === 'admin') {
+        if (!$user) {
             return response()->json(['error' => 'Usuario no encontrado.'], 404);
         }
         $user->delete();
         return response()->json(['message' => 'Usuario eliminado.']);
+    }
+
+    public function obtenerSesion(Request $request)
+    {
+        $admin = Auth::guard('sanctum')->user();
+        
+        if (!$admin instanceof Admin) {
+            return response()->json(['error' => 'No autorizado'], 401);
+        }
+
+        return response()->json([
+            'authenticated' => true,
+            'admin' => $admin,
+            'user_type' => 'admin'
+        ]);
+    }
+
+    public function validarSesion(Request $request)
+    {
+        $admin = Auth::guard('sanctum')->user();
+        
+        if (!$admin instanceof Admin) {
+            return response()->json(['authenticated' => false], 401);
+        }
+
+        return response()->json(['authenticated' => true]);
     }
 }

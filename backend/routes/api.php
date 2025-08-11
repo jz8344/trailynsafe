@@ -7,6 +7,10 @@ use App\Http\Controllers\SessionController;
 use App\Http\Controllers\CodigoSeguridadController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\HijoController;
+use App\Http\Controllers\ChoferController;
+use App\Http\Controllers\UnidadController;
+use App\Http\Controllers\RutaController;
 
 // Rutas públicas para usuarios
 Route::post('/register', [UsuarioController::class, 'register']);
@@ -36,14 +40,35 @@ Route::middleware(['auth:sanctum', \App\Http\Middleware\CheckRoleUsuario::class]
 });
 
 // Rutas protegidas para administradores
-Route::middleware(['auth:admin-sanctum', \App\Http\Middleware\CheckRoleAdmin::class])->group(function () {
+Route::middleware(['auth:sanctum'])->group(function () {
+    Route::get('/admin/sesion', [AdminController::class, 'obtenerSesion']);
+    Route::get('/admin/validar-sesion', [AdminController::class, 'validarSesion']);
     Route::get('/usuarios', [AdminController::class, 'list']);
     Route::get('/admin/usuarios', [AdminController::class, 'usersIndex']);
     Route::post('/admin/usuarios', [AdminController::class, 'createUser']);
     Route::put('/admin/usuarios/{id}', [AdminController::class, 'updateUser']);
     Route::delete('/admin/usuarios/{id}', [AdminController::class, 'deleteUser']);
-    Route::get('/admin/sesion', [SessionController::class, 'index']);
-    Route::get('/admin/validar-sesion', [SessionController::class, 'validarSesion']);
+    // CRUD Hijos
+    Route::get('/admin/hijos', [HijoController::class, 'index']);
+    Route::post('/admin/hijos', [HijoController::class, 'store']);
+    Route::get('/admin/hijos/{id}', [HijoController::class, 'show']);
+    Route::put('/admin/hijos/{id}', [HijoController::class, 'update']);
+    Route::delete('/admin/hijos/{id}', [HijoController::class, 'destroy']);
+    // CRUD Choferes
+    Route::get('/admin/choferes', [ChoferController::class, 'index']);
+    Route::post('/admin/choferes', [ChoferController::class, 'store']);
+    Route::put('/admin/choferes/{id}', [ChoferController::class, 'update']);
+    Route::delete('/admin/choferes/{id}', [ChoferController::class, 'destroy']);
+    // CRUD Unidades
+    Route::get('/admin/unidades', [UnidadController::class, 'index']);
+    Route::post('/admin/unidades', [UnidadController::class, 'store']);
+    Route::put('/admin/unidades/{id}', [UnidadController::class, 'update']);
+    Route::delete('/admin/unidades/{id}', [UnidadController::class, 'destroy']);
+    // CRUD Rutas
+    Route::get('/admin/rutas', [RutaController::class, 'index']);
+    Route::post('/admin/rutas', [RutaController::class, 'store']);
+    Route::put('/admin/rutas/{id}', [RutaController::class, 'update']);
+    Route::delete('/admin/rutas/{id}', [RutaController::class, 'destroy']);
     Route::post('/admin/editar-perfil', [AdminController::class, 'editarPerfil']);
     Route::post('/admin/actualizar-contrasena', [AdminController::class, 'newPassword']);
     Route::post('/admin/sesiones/cerrar-actual', [SessionController::class, 'destroyCurrent']);

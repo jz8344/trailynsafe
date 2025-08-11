@@ -1,252 +1,385 @@
-<template>
-  <div class="min-vh-100 bg-light">
-    <nav class="navbar navbar-expand-lg navbar-dark bg-white shadow-sm border-bottom">
-      <div class="container-fluid px-4">
-        <div class="d-flex align-items-center">
-          <div class="d-inline-flex align-items-center justify-content-center rounded-3 me-3" 
-               style="width: 40px; height: 40px; background: linear-gradient(135deg, #7c3aed, #3b82f6);">
-            <i class="bi bi-speedometer2 text-white"></i>
-          </div>
-          <div>
-            <h5 class="mb-0 text-dark fw-bold">Panel de Administración</h5>
-            <small class="text-muted">TrailynSafe Admin Dashboard</small>
-          </div>
-        </div>
-        
-        <div class="d-flex align-items-center">
-          <div class="text-end me-3">
-            <div class="fw-medium text-dark">{{ adminData?.nombre }} {{ adminData?.apellidos }}</div>
-            <small class="text-muted">Administrador</small>
-          </div>
-          <button 
-            @click="logout"
-            class="btn btn-danger d-flex align-items-center"
-          >
-            <i class="bi bi-box-arrow-right me-2"></i>
-            Salir
-          </button>
-        </div>
-      </div>
-    </nav>
+<script setup>
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+import AdminLayout from './layouts/AdminLayout.vue'
 
-    <main class="container-fluid px-4 py-4">
-      <div class="mb-4">
-        <h2 class="fw-bold text-dark mb-2">¡Bienvenido al Panel!</h2>
-        <p class="text-muted">Administra el sistema TrailynSafe desde aquí</p>
-      </div>
+/**
+ * AdminDashboard.vue
+ * - Dashboard administrativo usando Bootstrap 5
+ * - Navbar unificado reutilizable en todas las apps del admin
+ * - Grid de tarjetas: Base de datos, Usuarios, Choferes, Rutas, Unidades, Estadísticas
+ */
 
-      <div class="row g-4 mb-4">
-        <div class="col-lg-3 col-md-6">
-          <div class="card h-100 shadow-sm border-0">
-            <div class="card-body">
-              <div class="d-flex align-items-center">
-                <div class="p-3 rounded-circle me-3" style="background-color: #dbeafe;">
-                  <i class="bi bi-people-fill fs-4" style="color: #2563eb;"></i>
-                </div>
-                <div>
-                  <h6 class="text-muted mb-1">Total Usuarios</h6>
-                  <h4 class="fw-bold mb-0">{{ stats.totalUsuarios }}</h4>
-                </div>
-              </div>
-            </div>
-            <div class="border-start border-4 border-primary position-absolute top-0 bottom-0" style="left: 0; width: 4px;"></div>
-          </div>
-        </div>
+const router = useRouter()
 
-        <div class="col-lg-3 col-md-6">
-          <div class="card h-100 shadow-sm border-0">
-            <div class="card-body">
-              <div class="d-flex align-items-center">
-                <div class="p-3 rounded-circle me-3" style="background-color: #dcfce7;">
-                  <i class="bi bi-check-circle-fill fs-4" style="color: #16a34a;"></i>
-                </div>
-                <div>
-                  <h6 class="text-muted mb-1">Usuarios Activos</h6>
-                  <h4 class="fw-bold mb-0">{{ stats.usuariosActivos }}</h4>
-                </div>
-              </div>
-            </div>
-            <div class="border-start border-4 border-success position-absolute top-0 bottom-0" style="left: 0; width: 4px;"></div>
-          </div>
-        </div>
+// Estado reactivo
+const loading = ref(false)
+const searchQuery = ref('')
 
-        <div class="col-lg-3 col-md-6">
-          <div class="card h-100 shadow-sm border-0">
-            <div class="card-body">
-              <div class="d-flex align-items-center">
-                <div class="p-3 rounded-circle me-3" style="background-color: #f3e8ff;">
-                  <i class="bi bi-building fs-4" style="color: #7c3aed;"></i>
-                </div>
-                <div>
-                  <h6 class="text-muted mb-1">Administradores</h6>
-                  <h4 class="fw-bold mb-0">{{ stats.totalAdmins }}</h4>
-                </div>
-              </div>
-            </div>
-            <div class="border-start border-4 position-absolute top-0 bottom-0" style="left: 0; width: 4px; border-color: #7c3aed !important;"></div>
-          </div>
-        </div>
+// Función para manejar cambios de ruta
+router.afterEach(() => {
+  loading.value = false
+})
 
-        <div class="col-lg-3 col-md-6">
-          <div class="card h-100 shadow-sm border-0">
-            <div class="card-body">
-              <div class="d-flex align-items-center">
-                <div class="p-3 rounded-circle me-3" style="background-color: #fef3c7;">
-                  <i class="bi bi-server fs-4" style="color: #d97706;"></i>
-                </div>
-                <div>
-                  <h6 class="text-muted mb-1">Sistema</h6>
-                  <h4 class="fw-bold mb-0">Activo</h4>
-                </div>
-              </div>
-            </div>
-            <div class="border-start border-4 border-warning position-absolute top-0 bottom-0" style="left: 0; width: 4px;"></div>
-          </div>
-        </div>
-      </div>
+const cards = [
+  {
+    key: 'bd',
+    title: 'Base de datos',
+    description: 'Gestión y consulta de datos',
+    icon: 'bi-database-fill',
+    color: 'primary',
+    img: 'https://raw.githubusercontent.com/odoo/odoo/18.0/addons/sale/static/description/icon.png',
+  },
+  {
+    key: 'usuarios',
+    title: 'Usuarios',
+    description: 'Administrar usuarios del sistema',
+    icon: 'bi-people-fill',
+    color: 'success',
+    img: '/img/USUARIOS.png',
+    badge: 'Nuevo',
+  },
+  {
+    key: 'hijos',
+    title: 'Hijos',
+    description: 'Registro de estudiantes',
+    icon: 'bi-person-heart',
+    color: 'info',
+    img: '/src/assets/icons/hijos.png',
+  },
+  {
+    key: 'choferes',
+    title: 'Choferes',
+    description: 'Gestión de conductores',
+    icon: 'bi-person-vcard',
+    color: 'warning',
+    img: '/src/assets/icons/choferes.png',
+  },
+  {
+    key: 'rutas',
+    title: 'Rutas',
+    description: 'Planificación de recorridos',
+    icon: 'bi-geo-alt-fill',
+    color: 'danger',
+    img: '/src/assets/icons/rutas.png',
+  },
+  {
+    key: 'unidades',
+    title: 'Unidades',
+    description: 'Control de vehículos',
+    icon: 'bi-bus-front-fill',
+    color: 'secondary',
+    img: '/src/assets/icons/unidades.png',
+  },
+  {
+    key: 'estadisticas',
+    title: 'Estadísticas',
+    description: 'Reportes y métricas',
+    icon: 'bi-bar-chart-fill',
+    color: 'dark',
+    img: '/src/assets/icons/estadisticas.png',
+  },
+]
 
-      <div class="row g-4">
-        <div class="col-lg-4 col-md-6">
-          <div class="card h-100 shadow-sm border-0 overflow-hidden">
-            <div class="card-header text-white border-0" style="background: linear-gradient(135deg, #3b82f6, #2563eb);">
-              <div class="d-flex align-items-center">
-                <i class="bi bi-people fs-4 me-3"></i>
-                <h5 class="mb-0 fw-bold">Gestión de Usuarios</h5>
-              </div>
-            </div>
-            <div class="card-body">
-              <p class="text-muted mb-4">Administra todos los usuarios del sistema, revisa perfiles y gestiona permisos.</p>
-              <button 
-                @click="gestionarUsuarios"
-                class="btn btn-outline-primary w-100 d-flex align-items-center justify-content-center"
-              >
-                <i class="bi bi-people me-2"></i>
-                Ver Usuarios
-              </button>
-            </div>
-          </div>
-        </div>
+// Mapeo de las claves a rutas
+const routeMap = {
+  'dashboard': '/admin/dashboard',
+  'bd': '/admin/dashboard',
+  'usuarios': '/admin/usuarios',
+  'hijos': '/admin/hijos',
+  'choferes': '/admin/choferes',
+  'rutas': '/admin/rutas',
+  'unidades': '/admin/unidades',
+  'estadisticas': '/admin/estadisticas',
+  'ajustes': '/admin/configuracion',
+}
 
-        <div class="col-lg-4 col-md-6">
-          <div class="card h-100 shadow-sm border-0 overflow-hidden">
-            <div class="card-header text-white border-0" style="background: linear-gradient(135deg, #16a34a, #15803d);">
-              <div class="d-flex align-items-center">
-                <i class="bi bi-database fs-4 me-3"></i>
-                <h5 class="mb-0 fw-bold">Base de Datos</h5>
-              </div>
-            </div>
-            <div class="card-body">
-              <p class="text-muted mb-4">Gestiona respaldos de la base de datos y monitorea el estado del sistema.</p>
-              <div class="d-grid gap-2">
-                <button 
-                  @click="crearRespaldo"
-                  class="btn btn-outline-success d-flex align-items-center justify-content-center"
-                >
-                  <i class="bi bi-download me-2"></i>
-                  Crear Respaldo
-                </button>
-                <button 
-                  @click="verRespaldos"
-                  class="btn btn-outline-success d-flex align-items-center justify-content-center"
-                >
-                  <i class="bi bi-list-ul me-2"></i>
-                  Ver Respaldos
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="col-lg-4 col-md-6">
-          <div class="card h-100 shadow-sm border-0 overflow-hidden">
-            <div class="card-header text-white border-0" style="background: linear-gradient(135deg, #7c3aed, #6d28d9);">
-              <div class="d-flex align-items-center">
-                <i class="bi bi-person-circle fs-4 me-3"></i>
-                <h5 class="mb-0 fw-bold">Mi Perfil</h5>
-              </div>
-            </div>
-            <div class="card-body">
-              <p class="text-muted mb-4">Gestiona tu información personal y configuración de cuenta administrativa.</p>
-              <div class="d-grid gap-2">
-                <router-link 
-                  to="/admin/perfil"
-                  class="btn btn-outline-primary d-flex align-items-center justify-content-center text-decoration-none"
-                >
-                  <i class="bi bi-pencil me-2"></i>
-                  Editar Perfil
-                </router-link>
-                <button 
-                  @click="cambiarContrasena"
-                  class="btn btn-outline-primary d-flex align-items-center justify-content-center"
-                >
-                  <i class="bi bi-lock me-2"></i>
-                  Cambiar Contraseña
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </main>
-  </div>
-</template>
-
-<script>
-import axios from 'axios'
-import { admin, logoutAdmin } from '@/store/session.js'
-
-export default {
-  name: 'AdminDashboard',
-  data() {
-    return {
-      stats: {
-        totalUsuarios: 0,
-        usuariosActivos: 0,
-        totalAdmins: 0
+// Métodos
+async function onCardClick(key) {
+  console.log('Clicked card:', key)
+  const route = routeMap[key]
+  console.log('Route to navigate:', route)
+  
+  if (route) {
+    loading.value = true
+    console.log('Navigating to:', route)
+    
+    try {
+      // Usar replace si ya estamos en esa ruta, push si es diferente
+      const currentPath = router.currentRoute.value.path
+      console.log('Current path:', currentPath)
+      
+      if (currentPath === route) {
+        console.log('Same route, forcing refresh with replace')
+        await router.replace({ path: route, query: { refresh: Date.now() } })
+      } else {
+        console.log('Different route, using push')
+        await router.push(route)
       }
+      
+      console.log('Navigation successful to:', route)
+    } catch (error) {
+      console.error('Navigation error:', error)
+    } finally {
+      setTimeout(() => {
+        loading.value = false
+      }, 100)
     }
-  },
-  computed: {
-    adminData() {
-      return admin.value
-    }
-  },
-  async mounted() {
-    await this.cargarEstadisticas()
-  },
-  methods: {
-    async cargarEstadisticas() {
-      try {
-        const token = localStorage.getItem('admin_token')
-        const response = await axios.get('http://127.0.0.1:8000/api/usuarios', {
-          headers: { Authorization: `Bearer ${token}` }
-        })
-        
-        const usuarios = response.data
-        this.stats.totalUsuarios = usuarios.filter(u => u.rol === 'usuario').length
-        this.stats.totalAdmins = usuarios.filter(u => u.rol === 'admin').length
-        this.stats.usuariosActivos = usuarios.length
-      } catch (error) {
-        console.error('Error al cargar estadísticas:', error)
-      }
-    },
-    gestionarUsuarios() {
-  this.$router.push('/admin/usuarios')
-    },
-    crearRespaldo() {
-      alert('Función de respaldo en desarrollo')
-    },
-    verRespaldos() {
-      alert('Función de ver respaldos en desarrollo')
-    },
-    cambiarContrasena() {
-      alert('Función de cambio de contraseña en desarrollo')
-    },
-    logout() {
-      logoutAdmin()
-      localStorage.removeItem('admin_token')
-      this.$router.push('/admin/login')
-    }
+  } else {
+    console.error('No route found for key:', key)
   }
 }
+
+function handleSearch(query) {
+  searchQuery.value = query
+  console.log('Buscar:', query)
+  // Aquí implementarías la lógica de búsqueda
+}
+
+function handleNotifications() {
+  console.log('Mostrar notificaciones')
+  // Aquí implementarías la lógica de notificaciones
+}
+
+function handleHistory() {
+  console.log('Mostrar historial')
+  // Aquí implementarías la lógica del historial
+}
 </script>
+
+<template>
+  <AdminLayout 
+    page-title="Dashboard Administrativo"
+    page-description="Bienvenido al panel de control de TrailynSafe"
+    :notification-count="3"
+    :loading="loading"
+    @search="handleSearch"
+    @showNotifications="handleNotifications"
+    @showHistory="handleHistory"
+  >
+    <!-- Cards grid -->
+    <div class="row g-4">
+      <div v-for="card in cards" :key="card.key" class="col-12 col-sm-6 col-lg-4 col-xl-3">
+        <div 
+          class="card h-100 shadow-sm card-hover" 
+          @click="onCardClick(card.key)"
+          style="cursor: pointer; transition: all 0.3s ease;"
+        >
+          <div class="card-body text-center position-relative">
+            <!-- Badge -->
+            <span 
+              v-if="card.badge" 
+              class="position-absolute top-0 start-100 translate-middle badge bg-success"
+            >
+              {{ card.badge }}
+            </span>
+
+            <!-- Icon or Image -->
+            <div class="mb-3">
+              <div 
+                v-if="card.icon" 
+                :class="`bg-${card.color} bg-gradient`"
+                class="rounded-circle d-flex align-items-center justify-content-center mx-auto"
+                style="width: 64px; height: 64px;"
+              >
+                <i :class="card.icon" class="text-white fs-2"></i>
+              </div>
+              <img 
+                v-else-if="card.img" 
+                :src="card.img" 
+                :alt="card.title" 
+                class="img-fluid rounded"
+                style="width: 64px; height: 64px; object-fit: contain;"
+              >
+            </div>
+
+            <!-- Content -->
+            <h5 class="card-title mb-2">{{ card.title }}</h5>
+            <p class="card-text text-muted small mb-0">{{ card.description }}</p>
+          </div>
+          
+          <div class="card-footer bg-transparent border-0 pt-0">
+            <button :class="`btn btn-outline-${card.color} btn-sm w-100`">
+              <i class="bi bi-arrow-right me-1"></i>
+              Acceder
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick stats -->
+    <div class="row mt-5">
+      <div class="col">
+        <div class="card bg-light border-0 shadow-sm">
+          <div class="card-body">
+            <h5 class="card-title mb-4">
+              <i class="bi bi-graph-up text-primary me-2"></i>
+              Estadísticas rápidas
+            </h5>
+            <div class="row text-center">
+              <div class="col-6 col-md-3 mb-3 mb-md-0">
+                <div class="border-end border-md-end-0 border-bottom border-md-bottom-0 pb-3 pb-md-0 pe-md-3">
+                  <div class="d-flex align-items-center justify-content-center mb-2">
+                    <div class="bg-primary bg-gradient rounded-circle p-2 me-2">
+                      <i class="bi bi-people text-white"></i>
+                    </div>
+                    <h4 class="text-primary mb-0">156</h4>
+                  </div>
+                  <small class="text-muted">Usuarios activos</small>
+                </div>
+              </div>
+              <div class="col-6 col-md-3 mb-3 mb-md-0">
+                <div class="border-end border-md-end-0 border-bottom border-md-bottom-0 pb-3 pb-md-0 pe-md-3">
+                  <div class="d-flex align-items-center justify-content-center mb-2">
+                    <div class="bg-success bg-gradient rounded-circle p-2 me-2">
+                      <i class="bi bi-person-vcard text-white"></i>
+                    </div>
+                    <h4 class="text-success mb-0">23</h4>
+                  </div>
+                  <small class="text-muted">Choferes</small>
+                </div>
+              </div>
+              <div class="col-6 col-md-3 mb-3 mb-md-0">
+                <div class="border-end border-md-end-0 border-bottom border-md-bottom-0 pb-3 pb-md-0 pe-md-3">
+                  <div class="d-flex align-items-center justify-content-center mb-2">
+                    <div class="bg-warning bg-gradient rounded-circle p-2 me-2">
+                      <i class="bi bi-geo-alt text-white"></i>
+                    </div>
+                    <h4 class="text-warning mb-0">12</h4>
+                  </div>
+                  <small class="text-muted">Rutas activas</small>
+                </div>
+              </div>
+              <div class="col-6 col-md-3">
+                <div class="d-flex align-items-center justify-content-center mb-2">
+                  <div class="bg-info bg-gradient rounded-circle p-2 me-2">
+                    <i class="bi bi-bus-front text-white"></i>
+                  </div>
+                  <h4 class="text-info mb-0">8</h4>
+                </div>
+                <small class="text-muted">Unidades</small>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent activity -->
+    <div class="row mt-4">
+      <div class="col-lg-8">
+        <div class="card shadow-sm">
+          <div class="card-header bg-transparent border-bottom-0">
+            <h6 class="card-title mb-0">
+              <i class="bi bi-clock-history text-primary me-2"></i>
+              Actividad reciente
+            </h6>
+          </div>
+          <div class="card-body">
+            <div class="list-group list-group-flush">
+              <div class="list-group-item border-0 px-0">
+                <div class="d-flex align-items-center">
+                  <div class="bg-success bg-gradient rounded-circle p-2 me-3">
+                    <i class="bi bi-person-plus text-white small"></i>
+                  </div>
+                  <div class="flex-grow-1">
+                    <p class="mb-1 small">Nuevo usuario registrado</p>
+                    <small class="text-muted">hace 2 minutos</small>
+                  </div>
+                </div>
+              </div>
+              <div class="list-group-item border-0 px-0">
+                <div class="d-flex align-items-center">
+                  <div class="bg-primary bg-gradient rounded-circle p-2 me-3">
+                    <i class="bi bi-geo-alt text-white small"></i>
+                  </div>
+                  <div class="flex-grow-1">
+                    <p class="mb-1 small">Ruta actualizada: Centro - Norte</p>
+                    <small class="text-muted">hace 15 minutos</small>
+                  </div>
+                </div>
+              </div>
+              <div class="list-group-item border-0 px-0">
+                <div class="d-flex align-items-center">
+                  <div class="bg-warning bg-gradient rounded-circle p-2 me-3">
+                    <i class="bi bi-bus-front text-white small"></i>
+                  </div>
+                  <div class="flex-grow-1">
+                    <p class="mb-1 small">Unidad 005 en mantenimiento</p>
+                    <small class="text-muted">hace 1 hora</small>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-4 mt-4 mt-lg-0">
+        <div class="card shadow-sm">
+          <div class="card-header bg-transparent border-bottom-0">
+            <h6 class="card-title mb-0">
+              <i class="bi bi-exclamation-triangle text-warning me-2"></i>
+              Alertas del sistema
+            </h6>
+          </div>
+          <div class="card-body">
+            <div class="alert alert-warning alert-sm" role="alert">
+              <small>
+                <i class="bi bi-fuel-pump me-1"></i>
+                Unidad 003 necesita combustible
+              </small>
+            </div>
+            <div class="alert alert-info alert-sm" role="alert">
+              <small>
+                <i class="bi bi-calendar-event me-1"></i>
+                Mantenimiento programado mañana
+              </small>
+            </div>
+            <div class="alert alert-success alert-sm mb-0" role="alert">
+              <small>
+                <i class="bi bi-check-circle me-1"></i>
+                Todos los sistemas operativos
+              </small>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </AdminLayout>
+</template>
+
+<style scoped>
+/* Hover effects para tarjetas */
+.card-hover:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.15) !important;
+}
+
+.card-hover:hover .btn {
+  background-color: var(--bs-primary);
+  color: white;
+  border-color: var(--bs-primary);
+}
+
+/* Alertas más pequeñas */
+.alert-sm {
+  padding: 0.375rem 0.75rem;
+  font-size: 0.875rem;
+}
+
+/* Cards con gradiente sutil */
+.card {
+  background: linear-gradient(145deg, #ffffff, #f8f9fa);
+  border: 1px solid rgba(0,0,0,0.1);
+}
+
+[data-bs-theme="dark"] .card {
+  background: linear-gradient(145deg, #2d3748, #1a202c);
+}
+
+/* Animaciones suaves */
+.btn, .card {
+  transition: all 0.3s ease;
+}
+</style>

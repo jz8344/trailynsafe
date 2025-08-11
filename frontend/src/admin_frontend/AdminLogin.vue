@@ -89,40 +89,61 @@
   </div>
 </template>
 
-<script>
-import axios from 'axios'
+<script setup>
+import { ref, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { loginAdmin } from '@/store/session.js'
+import axios from 'axios'
 
-export default {
-  name: 'AdminLogin',
-  data() {
-    return {
-      form: {
-        email: '',
-        password: ''
-      },
-      loading: false,
-      error: null
-    }
-  },
-  methods: {
-    async login() {
-      this.loading = true
-      this.error = null
+const router = useRouter()
 
-      try {
-        const response = await axios.post('http://127.0.0.1:8000/api/admin/login', this.form)
-        
-        localStorage.setItem('admin_token', response.data.token)
-        loginAdmin(response.data.admin)
-        
-        this.$router.push('/admin/dashboard')
-      } catch (error) {
-        this.error = error.response?.data?.error || 'Error al iniciar sesión'
-      } finally {
-        this.loading = false
-      }
+// Estado local
+const form = ref({
+  email: '',
+  password: ''
+})
+const loading = ref(false)
+const error = ref(null)
+
+// Verificar si ya está autenticado al cargar
+onMounted(async () => {
+  // Aquí podrías verificar el estado de autenticación si es necesario
+})
+
+async function login() {
+  loading.value = true
+  error.value = null
+
+  try {
+    // Petición directa con axios
+    const response = await axios.post('http://127.0.0.1:8000/api/admin/login', {
+      email: form.value.email,
+      password: form.value.password
+    })
+    
+    if (response.data.success) {
+      // Guardar token y datos del admin usando el store
+      localStorage.setItem('admin_token', response.data.token)
+      loginAdmin(response.data.admin)
+      
+      console.log('Login exitoso, admin logueado:', response.data.admin)
+      console.log('Redirigiendo a dashboard...')
+      await new Promise(resolve => setTimeout(resolve, 100))
+      router.push('/admin/dashboard')
+    } else {
+      error.value = response.data.error || 'Error al iniciar sesión'
     }
+  } catch (err) {
+    if (err.response && err.response.data && err.response.data.errors) {
+      error.value = Object.values(err.response.data.errors).join(' ')
+    } else if (err.response && err.response.data && err.response.data.error) {
+      error.value = err.response.data.error
+    } else {
+      error.value = 'Error inesperado al iniciar sesión'
+    }
+    console.error('Error en login:', err)
+  } finally {
+    loading.value = false
   }
 }
 </script>
