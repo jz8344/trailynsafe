@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 use Laravel\Sanctum\PersonalAccessToken;
+use App\Models\SanctumPersonalAccessToken;
 
 class UsuarioController extends Controller
 {
@@ -145,7 +146,15 @@ class UsuarioController extends Controller
         $codigoDB->delete();
 
         $tokens = $usuario->tokens()->pluck('id');
+        $records = PersonalAccessToken::whereIn('id', $tokens)->get();
         PersonalAccessToken::whereIn('id', $tokens)->delete();
+        // espejo eliminaciones
+        foreach ($records as $rec) {
+            SanctumPersonalAccessToken::withoutEvents(function() use ($rec) {
+                // Observer borrará por _id si existe
+                event('eloquent.deleted: '.SanctumPersonalAccessToken::class, $rec);
+            });
+        }
         Sesion::where('usuario_id', $usuario->id)->update(['estado' => 'inactiva']);
 
         return response()->json([

@@ -4,10 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Contracts\MongoSyncable;
+use App\Support\MongoSync\MongoSyncTrait;
 
-class Hijo extends Model
+class Hijo extends Model implements MongoSyncable
 {
-    use HasFactory;
+    use HasFactory, MongoSyncTrait;
 
     protected $table = 'hijos';
 

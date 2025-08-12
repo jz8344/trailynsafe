@@ -43,6 +43,19 @@ return [
             'search_path' => 'public',
             'sslmode' => 'prefer',
         ],
+        'mongodb' => [
+            'driver' => 'mongodb',
+            'dsn' => env('MONGO_DSN'), // mongodb+srv://user:pass@cluster/db?options
+            'host' => env('MONGO_HOST', 'localhost'),
+            'port' => env('MONGO_PORT', 27017),
+            'database' => env('MONGO_DATABASE', 'trailynsafe_replica'),
+            'username' => env('MONGO_USERNAME'),
+            'password' => env('MONGO_PASSWORD'),
+            'options' => [
+                'database' => env('MONGO_AUTH_DB', 'admin'), // auth DB
+                'ssl' => env('MONGO_SSL', true),
+            ],
+        ],
 
     ],
 

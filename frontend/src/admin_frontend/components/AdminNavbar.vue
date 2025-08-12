@@ -311,17 +311,28 @@ onMounted(() => {
   darkMode.value = stored
   document.body.setAttribute('data-bs-theme', stored ? 'dark' : 'light')
 
-  // Bootstrap tooltips initialization (with error handling)
-  try {
-    const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-    tooltipTriggerList.map(function (tooltipTriggerEl) {
-      if (typeof window !== 'undefined' && window.bootstrap && window.bootstrap.Tooltip) {
-        return new window.bootstrap.Tooltip(tooltipTriggerEl)
-      }
-    })
-  } catch (error) {
-    console.warn('Bootstrap tooltips not available:', error)
-  }
+  // Bootstrap tooltips and dropdowns initialization con delay
+  setTimeout(() => {
+    try {
+      // Inicializar tooltips
+      const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+      tooltipTriggerList.map(function (tooltipTriggerEl) {
+        if (typeof window !== 'undefined' && window.bootstrap && window.bootstrap.Tooltip) {
+          return new window.bootstrap.Tooltip(tooltipTriggerEl)
+        }
+      })
+
+      // Inicializar dropdowns manualmente
+      const dropdownElements = document.querySelectorAll('[data-bs-toggle="dropdown"]')
+      dropdownElements.forEach(element => {
+        if (typeof window !== 'undefined' && window.bootstrap && window.bootstrap.Dropdown) {
+          new window.bootstrap.Dropdown(element)
+        }
+      })
+    } catch (error) {
+      console.warn('Bootstrap components not available:', error)
+    }
+  }, 100)
 
   // Keyboard shortcuts
   window.addEventListener('keydown', e => {
@@ -428,5 +439,59 @@ onMounted(() => {
     height: 28px;
     width: 28px;
   }
+}
+
+/* Dropdown styles */
+.dropdown-menu {
+  border: none;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+  border-radius: 8px;
+  padding: 8px 0;
+  z-index: 1050;
+  background: white;
+}
+
+[data-bs-theme="dark"] .dropdown-menu {
+  background: var(--bs-dark);
+  color: var(--bs-light);
+}
+
+.dropdown-item {
+  padding: 8px 16px;
+  transition: all 0.2s ease;
+  border: none;
+  background: transparent;
+  width: 100%;
+  text-align: left;
+  color: inherit;
+}
+
+.dropdown-item:hover,
+.dropdown-item:focus {
+  background: rgba(0, 123, 255, 0.1);
+  color: #007bff;
+}
+
+[data-bs-theme="dark"] .dropdown-item:hover,
+[data-bs-theme="dark"] .dropdown-item:focus {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--bs-primary);
+}
+
+.dropdown-header {
+  padding: 8px 16px;
+  margin: 0;
+  font-size: 0.875rem;
+  color: #6c757d;
+  font-weight: 600;
+}
+
+.dropdown-divider {
+  margin: 8px 0;
+  border-color: rgba(0, 0, 0, 0.1);
+}
+
+[data-bs-theme="dark"] .dropdown-divider {
+  border-color: rgba(255, 255, 255, 0.1);
 }
 </style>

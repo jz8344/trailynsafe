@@ -5,10 +5,12 @@ namespace App\Models;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Notifications\Notifiable;
+use App\Contracts\MongoSyncable;
+use App\Support\MongoSync\MongoSyncTrait;
 
-class Usuario extends Authenticatable
+class Usuario extends Authenticatable implements MongoSyncable
 {
-    use HasApiTokens, Notifiable;
+    use HasApiTokens, Notifiable, MongoSyncTrait;
 
     protected $table = 'usuarios';
 

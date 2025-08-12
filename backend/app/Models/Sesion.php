@@ -3,9 +3,12 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Contracts\MongoSyncable;
+use App\Support\MongoSync\MongoSyncTrait;
 
-class Sesion extends Model
+class Sesion extends Model implements MongoSyncable
 {
+    use MongoSyncTrait;
     protected $table = 'sesiones';
 
     protected $fillable = [
