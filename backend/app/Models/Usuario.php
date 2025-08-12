@@ -19,6 +19,7 @@ class Usuario extends Authenticatable
         'correo',
         'contrasena',
         'rol', 
+        'have_son',
         'fecha_registro',
     ];
 

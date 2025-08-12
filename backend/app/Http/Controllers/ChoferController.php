@@ -30,7 +30,6 @@ class ChoferController extends Controller
         }
         
         $data = $validator->validated();
-        // Asegurar que el estado tenga un valor por defecto
         if (!isset($data['estado']) || empty($data['estado'])) {
             $data['estado'] = 'disponible';
         }

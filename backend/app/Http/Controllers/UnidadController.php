@@ -34,12 +34,10 @@ class UnidadController extends Controller
 
         $data = $validator->validated();
         
-        // Asegurar que el estado tenga un valor por defecto
         if (!isset($data['estado']) || empty($data['estado'])) {
             $data['estado'] = 'activo';
         }
         
-        // Manejar la subida de imagen
         if ($request->hasFile('imagen')) {
             $image = $request->file('imagen');
             $imageName = time() . '_' . $image->getClientOriginalName();

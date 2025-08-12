@@ -61,4 +61,36 @@ class HijoController extends Controller
         $hijo->delete();
         return response()->json(['message' => 'Eliminado']);
     }
+
+    // Métodos específicos para usuarios regulares
+    public function userIndex(Request $request)
+    {
+        $user = auth()->user();
+        return response()->json(Hijo::where('padre_id', $user->id)->orderByDesc('id')->get());
+    }
+
+    public function userStore(Request $request)
+    {
+        $user = auth()->user();
+        
+        $validator = Validator::make($request->all(), [
+            'nombre' => 'required|string|max:255',
+            'grado' => 'required|string|max:2',
+            'grupo' => 'required|string|max:1',
+            'escuela' => 'required|string|max:255',
+            'codigo_qr' => 'required|string|unique:hijos,codigo_qr',
+            'emergencia_1' => 'nullable|string|max:25',
+            'emergencia_2' => 'nullable|string|max:25',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        }
+
+        $data = $validator->validated();
+        $data['padre_id'] = $user->id;
+
+        $hijo = Hijo::create($data);
+        return response()->json($hijo, 201);
+    }
 }

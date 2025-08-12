@@ -15,8 +15,11 @@ class Hijo extends Model
         'nombre',
         'grado',
         'grupo',
+        'escuela',
         'codigo_qr',
         'padre_id',
+    'emergencia_1',
+    'emergencia_2',
     ];
 
     public function padre()

@@ -26,11 +26,7 @@ class Chofer extends Model
         'updated_at' => 'datetime',
     ];
 
-    // Eliminamos la relación con usuario ya que ahora es independiente
-    // public function usuario()
-    // {
-    //     return $this->belongsTo(Usuario::class, 'usuario_id');
-    // }
+    
 
     public function rutas()
     {

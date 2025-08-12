@@ -244,4 +244,26 @@ class UsuarioController extends Controller
             'usuario' => $user->fresh()
         ]);
     }
+
+    public function checkHaveSon(Request $request)
+    {
+        $user = Auth::user();
+        
+        return response()->json([
+            'have_son' => $user->have_son,
+            'usuario' => $user
+        ]);
+    }
+
+    public function updateHaveSon(Request $request)
+    {
+        $user = Auth::user();
+        
+        $user->update(['have_son' => true]);
+        
+        return response()->json([
+            'message' => 'Estado actualizado correctamente',
+            'have_son' => true
+        ]);
+    }
 }

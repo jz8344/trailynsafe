@@ -11,6 +11,7 @@ use App\Http\Controllers\HijoController;
 use App\Http\Controllers\ChoferController;
 use App\Http\Controllers\UnidadController;
 use App\Http\Controllers\RutaController;
+use App\Http\Controllers\ImpresionController;
 
 // Rutas públicas para usuarios
 Route::post('/register', [UsuarioController::class, 'register']);
@@ -37,6 +38,12 @@ Route::middleware(['auth:sanctum', \App\Http\Middleware\CheckRoleUsuario::class]
     Route::post('/cambiar-contrasena-autenticado', [UsuarioController::class, 'cambiarContrasena']);
     Route::post('/enviar-codigo-auth', [CodigoSeguridadController::class, 'enviarCodigo']);
     Route::post('/validar-codigo-auth', [CodigoSeguridadController::class, 'validarCodigo']);
+    Route::get('/hvson', [UsuarioController::class, 'checkHaveSon']);
+    Route::post('/update-have-son', [UsuarioController::class, 'updateHaveSon']);
+    // CRUD Hijos para usuarios
+    Route::get('/hijos', [HijoController::class, 'userIndex']);
+    Route::post('/hijos', [HijoController::class, 'userStore']);
+    Route::post('/solicitar-impresion-qrs', [ImpresionController::class, 'solicitar']);
 });
 
 // Rutas protegidas para administradores

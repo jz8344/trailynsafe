@@ -8,11 +8,9 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::table('choferes', function (Blueprint $table) {
-            // Eliminar la referencia a usuario_id
             $table->dropForeign(['usuario_id']);
             $table->dropColumn(['usuario_id', 'licencia']);
             
-            // Agregar los nuevos campos
             $table->string('nombre', 100)->after('id');
             $table->string('apellidos', 100)->after('nombre');
             $table->string('numero_licencia', 50)->nullable()->after('apellidos');
@@ -26,7 +24,6 @@ return new class extends Migration {
     public function down(): void
     {
         Schema::table('choferes', function (Blueprint $table) {
-            // Restaurar estructura anterior
             $table->dropColumn([
                 'nombre', 
                 'apellidos', 

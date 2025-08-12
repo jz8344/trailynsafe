@@ -219,10 +219,8 @@ class AdminController extends Controller
 
     public function obtenerSesion(Request $request)
     {
-        // Intentar obtener el usuario del token Sanctum
         $user = Auth::guard('admin-sanctum')->user();
         
-        // Verificar si es un admin buscando en la tabla admins
         if ($user && get_class($user) === 'App\Models\Admin') {
             $admin = $user;
         } else {
@@ -242,10 +240,8 @@ class AdminController extends Controller
 
     public function validarSesion(Request $request)
     {
-        // Intentar obtener el usuario del token Sanctum
         $user = Auth::guard('admin-sanctum')->user();
         
-        // Verificar si es un admin
         if ($user && get_class($user) === 'App\Models\Admin') {
             return response()->json(['authenticated' => true]);
         }
