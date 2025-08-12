@@ -21,6 +21,10 @@ class MongoResyncCommand extends Command
             \App\Models\Chofer::class,
             \App\Models\Unidad::class,
             \App\Models\Ruta::class,
+            \App\Models\Admin::class,
+            \App\Models\CodigoSeguridad::class,
+            \App\Models\Sesion::class,
+            \App\Models\SolicitudImpresionQr::class,
             \Laravel\Sanctum\PersonalAccessToken::class,
         ];
 

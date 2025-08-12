@@ -43,9 +43,10 @@ return [
             'search_path' => 'public',
             'sslmode' => 'prefer',
         ],
+        
         'mongodb' => [
             'driver' => 'mongodb',
-            'dsn' => env('MONGO_DSN'), // mongodb+srv://user:pass@cluster/db?options
+            'dsn' => env('MONGO_DSN'), 
             'host' => env('MONGO_HOST', 'localhost'),
             'port' => env('MONGO_PORT', 27017),
             'database' => env('MONGO_DATABASE', 'trailynsafe_replica'),

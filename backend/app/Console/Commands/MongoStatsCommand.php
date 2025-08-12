@@ -27,7 +27,6 @@ class MongoStatsCommand extends Command
             ['model' => \App\Models\CodigoSeguridad::class, 'table' => 'codigo_seguridads', 'collection' => 'codigo_seguridads'],
             ['model' => \App\Models\Sesion::class, 'table' => 'sesiones', 'collection' => 'sesiones'],
             ['model' => \App\Models\SolicitudImpresionQr::class, 'table' => 'solicitudes_impresion_qr', 'collection' => 'solicitudes_impresion_qr'],
-            ['model' => \App\Models\User::class, 'table' => 'users', 'collection' => 'users'],
             ['model' => \Laravel\Sanctum\PersonalAccessToken::class, 'table' => 'personal_access_tokens', 'collection' => 'personal_access_tokens'],
         ];
 
