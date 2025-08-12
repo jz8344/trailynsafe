@@ -1,6 +1,5 @@
 <template>
   <div class="admin-layout">
-    <!-- Navbar -->
     <AdminNavbar 
       page-title="Estadísticas del Sistema"
       :user-name="'Admin'"
@@ -11,10 +10,8 @@
       @logout="() => {}"
     />
 
-    <!-- Main content -->
     <main class="main-content">
       <div class="container-fluid py-4">
-        <!-- Page header -->
         <div class="row mb-4">
           <div class="col">
             <div class="d-flex justify-content-between align-items-center">
@@ -38,7 +35,6 @@
           </div>
         </div>
 
-        <!-- Error alert -->
         <div v-if="error" class="row mb-4">
           <div class="col">
             <div class="alert alert-danger d-flex align-items-center">
@@ -48,7 +44,6 @@
           </div>
         </div>
 
-        <!-- Loading state -->
         <div v-if="cargando" class="text-center py-5">
           <div class="spinner-border text-primary mb-3" role="status">
             <span class="visually-hidden">Cargando...</span>
@@ -56,9 +51,7 @@
           <p class="text-muted">Cargando estadísticas...</p>
         </div>
 
-        <!-- Content -->
         <div v-else>
-          <!-- Resumen de tarjetas -->
           <div class="row mb-4">
             <div class="col-md-3 mb-3">
               <div class="card stats-card bg-primary text-white">
@@ -129,7 +122,6 @@
             </div>
           </div>
 
-          <!-- Segunda fila de estadísticas -->
           <div class="row mb-4">
             <div class="col-md-6 mb-4">
               <div class="card h-100">
@@ -226,7 +218,6 @@
             </div>
           </div>
 
-          <!-- Tercera fila: Usuarios y rutas recientes -->
           <div class="row">
             <div class="col-md-6 mb-4">
               <div class="card h-100">

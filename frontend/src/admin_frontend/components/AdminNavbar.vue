@@ -1,7 +1,7 @@
 <template>
   <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm fixed-top">
     <div class="container-fluid">
-      <!-- Sidebar toggle -->
+      
       <button 
         @click="toggleSidebar" 
         class="btn btn-outline-light me-3 d-lg-none" 
@@ -13,7 +13,7 @@
         <i class="bi bi-list"></i>
       </button>
 
-      <!-- Brand -->
+      
       <router-link to="/admin/dashboard" class="navbar-brand fw-bold text-decoration-none d-flex align-items-center">
         <img 
           src="/img/logo.png" 
@@ -23,7 +23,7 @@
         <span class="brand-text">TrailynSafe Admin</span>
       </router-link>
 
-      <!-- Breadcrumb -->
+      
       <nav aria-label="breadcrumb" class="d-none d-md-block">
         <ol class="breadcrumb mb-0 bg-transparent">
           <li class="breadcrumb-item">
@@ -37,9 +37,9 @@
         </ol>
       </nav>
 
-      <!-- Right side actions -->
+      
       <div class="navbar-nav ms-auto d-flex flex-row align-items-center">
-        <!-- Search -->
+        
         <div class="nav-item me-3 d-none d-md-block">
           <div class="input-group input-group-sm">
             <input 
@@ -57,7 +57,7 @@
           </div>
         </div>
 
-        <!-- Notifications -->
+        
         <div class="nav-item me-3">
           <button 
             class="btn btn-outline-light position-relative" 
@@ -77,7 +77,7 @@
           </button>
         </div>
 
-        <!-- Dark mode toggle -->
+        
         <div class="nav-item me-3">
           <button 
             @click="toggleDark" 
@@ -90,7 +90,7 @@
           </button>
         </div>
 
-        <!-- User menu -->
+        
         <div class="nav-item dropdown">
           <button 
             class="btn btn-outline-light dropdown-toggle d-flex align-items-center" 
@@ -133,7 +133,7 @@
     </div>
   </nav>
 
-  <!-- Sidebar para móvil -->
+  
   <div 
     v-if="sidebarOpen" 
     class="offcanvas offcanvas-start show d-lg-none" 
@@ -167,7 +167,7 @@
     </div>
   </div>
 
-  <!-- Sidebar aplicaciones para desktop -->
+  
   <div 
     v-if="sidebarOpen" 
     class="sidebar-overlay d-none d-lg-block"

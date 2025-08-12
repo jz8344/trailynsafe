@@ -131,7 +131,6 @@ const routes = [
      component: () => import('@/admin_frontend/AdminConfiguracion.vue'),
      meta: { middleware: [adminAuth] }
    },
-   // Ruta dinámica para las aplicaciones del admin
    {
      path: '/admin/app/:app',
      name: 'DynamicApp',

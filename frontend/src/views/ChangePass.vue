@@ -222,7 +222,6 @@ const isFormValid = computed(() => {
          confirmarPassword.value === nuevaPassword.value;
 });
 
-// --- Verificación periódica de sesión ---
 const conexionPerdida = ref(false);
 let sesionIntervalId = null;
 

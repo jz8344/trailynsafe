@@ -158,15 +158,12 @@
                 close(){ this.open = false }
             }
         }
-        // Atajos de teclado
         window.addEventListener('keydown', e => {
-            // Ctrl+K para focus search
             if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
                 e.preventDefault();
                 const el = document.getElementById('globalSearch');
                 el && el.focus();
             }
-            // / (slash) ya manejado en el input via x-ref
             if (e.altKey && e.ctrlKey && e.key.toLowerCase() === 'a') {
                 const elDrawerBtn = document.querySelector('[aria-label="Aplicaciones"]');
                 elDrawerBtn && elDrawerBtn.click();

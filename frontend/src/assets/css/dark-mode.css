@@ -156,6 +156,31 @@
   color: var(--bs-body-color);
 }
 
+/* Botón dark específico - En modo oscuro debe ser blanco */
+[data-bs-theme="dark"] .btn-outline-dark {
+  color: #ffffff !important;
+  border-color: #ffffff !important;
+  background-color: transparent;
+}
+
+[data-bs-theme="dark"] .btn-outline-dark:hover {
+  background-color: #ffffff !important;
+  color: #000000 !important;
+  border-color: #ffffff !important;
+}
+
+/* Asegurar que en modo claro el botón dark sea negro */
+.btn-outline-dark {
+  color: #000000;
+  border-color: #000000;
+}
+
+.btn-outline-dark:hover {
+  background-color: #000000;
+  color: #ffffff;
+  border-color: #000000;
+}
+
 /* Lists */
 [data-bs-theme="dark"] .list-group-item {
   background-color: #2d3748;

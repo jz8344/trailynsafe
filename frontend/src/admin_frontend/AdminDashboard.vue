@@ -1,24 +1,232 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import AdminLayout from './layouts/AdminLayout.vue'
+import axios from 'axios'
 
-/**
- * AdminDashboard.vue
- * - Dashboard administrativo usando Bootstrap 5
- * - Navbar unificado reutilizable en todas las apps del admin
- * - Grid de tarjetas: Base de datos, Usuarios, Choferes, Rutas, Unidades, Estadísticas
- */
 
 const router = useRouter()
 
-// Estado reactivo
+ 
 const loading = ref(false)
 const searchQuery = ref('')
+const recentActivity = ref([])
+const systemAlerts = ref([])
+const loadingActivity = ref(true)
 
-// Función para manejar cambios de ruta
+ 
 router.afterEach(() => {
   loading.value = false
+})
+
+ 
+async function fetchRecentActivity() {
+  try {
+    loadingActivity.value = true
+    
+    
+    const usersResponse = await axios.get('/api/usuarios?limit=2&sort=created_at,desc')
+    
+    
+    const unidadesResponse = await axios.get('/api/unidades?limit=2&sort=updated_at,desc')
+    
+    
+    const choferesResponse = await axios.get('/api/choferes?limit=1&sort=created_at,desc')
+    
+    const activities = []
+    
+    
+    if (usersResponse.data.data) {
+      usersResponse.data.data.forEach(user => {
+        activities.push({
+          type: 'user',
+          icon: 'bi-person-plus',
+          color: 'success',
+          message: `Nuevo usuario registrado: ${user.nombre}`,
+          time: getTimeAgo(user.created_at)
+        })
+      })
+    }
+    
+    
+    if (unidadesResponse.data.data) {
+      unidadesResponse.data.data.forEach(unidad => {
+        activities.push({
+          type: 'unidad',
+          icon: 'bi-bus-front',
+          color: 'warning',
+          message: `Unidad actualizada: ${unidad.numero_unidad}`,
+          time: getTimeAgo(unidad.updated_at)
+        })
+      })
+    }
+    
+    
+    if (choferesResponse.data.data) {
+      choferesResponse.data.data.forEach(chofer => {
+        activities.push({
+          type: 'chofer',
+          icon: 'bi-person-vcard',
+          color: 'primary',
+          message: `Nuevo chofer registrado: ${chofer.nombre}`,
+          time: getTimeAgo(chofer.created_at)
+        })
+      })
+    }
+    
+    
+    activities.sort((a, b) => {
+      const timeA = parseTimeAgo(a.time)
+      const timeB = parseTimeAgo(b.time)
+      return timeA - timeB
+    })
+    
+    recentActivity.value = activities.slice(0, 3) // Solo mostrar los 3 más recientes
+    
+  } catch (error) {
+    console.error('Error fetching recent activity:', error)
+    
+    recentActivity.value = [
+      {
+        type: 'system',
+        icon: 'bi-exclamation-triangle',
+        color: 'warning',
+        message: 'Error al cargar actividad reciente',
+        time: 'hace unos momentos'
+      }
+    ]
+  } finally {
+    loadingActivity.value = false
+  }
+}
+
+ 
+async function fetchSystemAlerts() {
+  try {
+    const alerts = []
+    
+    
+    const unidadesResponse = await axios.get('/api/unidades')
+    if (unidadesResponse.data.data) {
+      unidadesResponse.data.data.forEach(unidad => {
+        
+        if (unidad.combustible && unidad.combustible < 20) {
+          alerts.push({
+            type: 'warning',
+            icon: 'bi-fuel-pump',
+            message: `Unidad ${unidad.numero_unidad} necesita combustible (${unidad.combustible}%)`
+          })
+        }
+        
+        
+        if (unidad.fecha_ultimo_mantenimiento) {
+          const lastMaintenance = new Date(unidad.fecha_ultimo_mantenimiento)
+          const now = new Date()
+          const daysDiff = Math.floor((now - lastMaintenance) / (1000 * 60 * 60 * 24))
+          
+          if (daysDiff > 90) { // Más de 90 días sin mantenimiento
+            alerts.push({
+              type: 'danger',
+              icon: 'bi-wrench',
+              message: `Unidad ${unidad.numero_unidad} requiere mantenimiento urgente (${daysDiff} días)`
+            })
+          } else if (daysDiff > 75) { // Entre 75-90 días
+            alerts.push({
+              type: 'warning',
+              icon: 'bi-calendar-event',
+              message: `Unidad ${unidad.numero_unidad} próxima a mantenimiento`
+            })
+          }
+        }
+        
+        
+        if (unidad.estado === 'fuera_de_servicio' || unidad.estado === 'mantenimiento') {
+          alerts.push({
+            type: 'info',
+            icon: 'bi-tools',
+            message: `Unidad ${unidad.numero_unidad} en ${unidad.estado.replace('_', ' ')}`
+          })
+        }
+      })
+    }
+    
+    
+    const choferesResponse = await axios.get('/api/choferes')
+    if (choferesResponse.data.data) {
+      choferesResponse.data.data.forEach(chofer => {
+        if (chofer.fecha_vencimiento_licencia) {
+          const expiryDate = new Date(chofer.fecha_vencimiento_licencia)
+          const now = new Date()
+          const daysDiff = Math.floor((expiryDate - now) / (1000 * 60 * 60 * 24))
+          
+          if (daysDiff < 0) {
+            alerts.push({
+              type: 'danger',
+              icon: 'bi-exclamation-triangle',
+              message: `Licencia de ${chofer.nombre} vencida`
+            })
+          } else if (daysDiff <= 30) {
+            alerts.push({
+              type: 'warning',
+              icon: 'bi-calendar-x',
+              message: `Licencia de ${chofer.nombre} vence en ${daysDiff} días`
+            })
+          }
+        }
+      })
+    }
+    
+    
+    if (alerts.length === 0) {
+      alerts.push({
+        type: 'success',
+        icon: 'bi-check-circle',
+        message: 'Todos los sistemas funcionando correctamente'
+      })
+    }
+    
+    systemAlerts.value = alerts.slice(0, 4) // Máximo 4 alertas
+    
+  } catch (error) {
+    console.error('Error fetching system alerts:', error)
+    systemAlerts.value = [
+      {
+        type: 'warning',
+        icon: 'bi-exclamation-triangle',
+        message: 'Error al verificar el estado del sistema'
+      }
+    ]
+  }
+}
+
+ 
+function getTimeAgo(dateString) {
+  if (!dateString) return 'fecha desconocida'
+  
+  const date = new Date(dateString)
+  const now = new Date()
+  const diffInSeconds = Math.floor((now - date) / 1000)
+  
+  if (diffInSeconds < 60) return 'hace unos momentos'
+  if (diffInSeconds < 3600) return `hace ${Math.floor(diffInSeconds / 60)} minutos`
+  if (diffInSeconds < 86400) return `hace ${Math.floor(diffInSeconds / 3600)} horas`
+  if (diffInSeconds < 2592000) return `hace ${Math.floor(diffInSeconds / 86400)} días`
+  return `hace ${Math.floor(diffInSeconds / 2592000)} meses`
+}
+
+ 
+function parseTimeAgo(timeString) {
+  if (timeString.includes('momentos')) return 0
+  if (timeString.includes('minutos')) return parseInt(timeString.match(/\d+/)[0])
+  if (timeString.includes('horas')) return parseInt(timeString.match(/\d+/)[0]) * 60
+  if (timeString.includes('días')) return parseInt(timeString.match(/\d+/)[0]) * 24 * 60
+  return 999999 // Para fechas muy antiguas
+}
+
+ 
+onMounted(() => {
+  fetchRecentActivity()
+  fetchSystemAlerts()
 })
 
 const cards = [
@@ -81,7 +289,7 @@ const cards = [
   },
 ]
 
-// Mapeo de las claves a rutas
+ 
 const routeMap = {
   'dashboard': '/admin/dashboard',
   'bd': '/admin/dashboard',
@@ -94,7 +302,7 @@ const routeMap = {
   'ajustes': '/admin/configuracion',
 }
 
-// Métodos
+ 
 async function onCardClick(key) {
   console.log('Clicked card:', key)
   const route = routeMap[key]
@@ -120,17 +328,17 @@ async function onCardClick(key) {
 function handleSearch(query) {
   searchQuery.value = query
   console.log('Buscar:', query)
-  // Aquí implementarías la lógica de búsqueda
+  
 }
 
 function handleNotifications() {
   console.log('Mostrar notificaciones')
-  // Aquí implementarías la lógica de notificaciones
+  
 }
 
 function handleHistory() {
   console.log('Mostrar historial')
-  // Aquí implementarías la lógica del historial
+  
 }
 </script>
 
@@ -144,7 +352,6 @@ function handleHistory() {
     @showNotifications="handleNotifications"
     @showHistory="handleHistory"
   >
-    <!-- Cards grid -->
     <div class="row g-4">
       <div v-for="card in cards" :key="card.key" class="col-12 col-sm-6 col-lg-4 col-xl-3">
         <div 
@@ -153,7 +360,6 @@ function handleHistory() {
           style="cursor: pointer; transition: all 0.3s ease;"
         >
           <div class="card-body text-center position-relative">
-            <!-- Badge -->
             <span 
               v-if="card.badge" 
               class="position-absolute top-0 start-100 translate-middle badge bg-success"
@@ -161,7 +367,6 @@ function handleHistory() {
               {{ card.badge }}
             </span>
 
-            <!-- Icon or Image -->
             <div class="mb-3">
               <div 
                 v-if="card.icon" 
@@ -180,7 +385,6 @@ function handleHistory() {
               >
             </div>
 
-            <!-- Content -->
             <h5 class="card-title mb-2">{{ card.title }}</h5>
             <p class="card-text text-muted small mb-0">{{ card.description }}</p>
           </div>
@@ -195,65 +399,6 @@ function handleHistory() {
       </div>
     </div>
 
-    <!-- Quick stats -->
-    <div class="row mt-5">
-      <div class="col">
-        <div class="card bg-light border-0 shadow-sm">
-          <div class="card-body">
-            <h5 class="card-title mb-4">
-              <i class="bi bi-graph-up text-primary me-2"></i>
-              Estadísticas rápidas
-            </h5>
-            <div class="row text-center">
-              <div class="col-6 col-md-3 mb-3 mb-md-0">
-                <div class="border-end border-md-end-0 border-bottom border-md-bottom-0 pb-3 pb-md-0 pe-md-3">
-                  <div class="d-flex align-items-center justify-content-center mb-2">
-                    <div class="bg-primary bg-gradient rounded-circle p-2 me-2">
-                      <i class="bi bi-people text-white"></i>
-                    </div>
-                    <h4 class="text-primary mb-0">156</h4>
-                  </div>
-                  <small class="text-muted">Usuarios activos</small>
-                </div>
-              </div>
-              <div class="col-6 col-md-3 mb-3 mb-md-0">
-                <div class="border-end border-md-end-0 border-bottom border-md-bottom-0 pb-3 pb-md-0 pe-md-3">
-                  <div class="d-flex align-items-center justify-content-center mb-2">
-                    <div class="bg-success bg-gradient rounded-circle p-2 me-2">
-                      <i class="bi bi-person-vcard text-white"></i>
-                    </div>
-                    <h4 class="text-success mb-0">23</h4>
-                  </div>
-                  <small class="text-muted">Choferes</small>
-                </div>
-              </div>
-              <div class="col-6 col-md-3 mb-3 mb-md-0">
-                <div class="border-end border-md-end-0 border-bottom border-md-bottom-0 pb-3 pb-md-0 pe-md-3">
-                  <div class="d-flex align-items-center justify-content-center mb-2">
-                    <div class="bg-warning bg-gradient rounded-circle p-2 me-2">
-                      <i class="bi bi-geo-alt text-white"></i>
-                    </div>
-                    <h4 class="text-warning mb-0">12</h4>
-                  </div>
-                  <small class="text-muted">Rutas activas</small>
-                </div>
-              </div>
-              <div class="col-6 col-md-3">
-                <div class="d-flex align-items-center justify-content-center mb-2">
-                  <div class="bg-info bg-gradient rounded-circle p-2 me-2">
-                    <i class="bi bi-bus-front text-white"></i>
-                  </div>
-                  <h4 class="text-info mb-0">8</h4>
-                </div>
-                <small class="text-muted">Unidades</small>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Recent activity -->
     <div class="row mt-4">
       <div class="col-lg-8">
         <div class="card shadow-sm">
@@ -264,37 +409,29 @@ function handleHistory() {
             </h6>
           </div>
           <div class="card-body">
-            <div class="list-group list-group-flush">
-              <div class="list-group-item border-0 px-0">
-                <div class="d-flex align-items-center">
-                  <div class="bg-success bg-gradient rounded-circle p-2 me-3">
-                    <i class="bi bi-person-plus text-white small"></i>
-                  </div>
-                  <div class="flex-grow-1">
-                    <p class="mb-1 small">Nuevo usuario registrado</p>
-                    <small class="text-muted">hace 2 minutos</small>
-                  </div>
-                </div>
+            <div v-if="loadingActivity" class="text-center py-3">
+              <div class="spinner-border spinner-border-sm text-primary" role="status">
+                <span class="visually-hidden">Cargando...</span>
               </div>
-              <div class="list-group-item border-0 px-0">
+              <p class="mt-2 mb-0 small text-muted">Cargando actividad reciente...</p>
+            </div>
+            <div v-else-if="recentActivity.length === 0" class="text-center py-3">
+              <i class="bi bi-inbox text-muted fs-3"></i>
+              <p class="mt-2 mb-0 text-muted">No hay actividad reciente</p>
+            </div>
+            <div v-else class="list-group list-group-flush">
+              <div 
+                v-for="(activity, index) in recentActivity" 
+                :key="index"
+                class="list-group-item border-0 px-0"
+              >
                 <div class="d-flex align-items-center">
-                  <div class="bg-primary bg-gradient rounded-circle p-2 me-3">
-                    <i class="bi bi-geo-alt text-white small"></i>
+                  <div :class="`bg-${activity.color} bg-gradient`" class="rounded-circle p-2 me-3">
+                    <i :class="activity.icon" class="text-white small"></i>
                   </div>
                   <div class="flex-grow-1">
-                    <p class="mb-1 small">Ruta actualizada: Centro - Norte</p>
-                    <small class="text-muted">hace 15 minutos</small>
-                  </div>
-                </div>
-              </div>
-              <div class="list-group-item border-0 px-0">
-                <div class="d-flex align-items-center">
-                  <div class="bg-warning bg-gradient rounded-circle p-2 me-3">
-                    <i class="bi bi-bus-front text-white small"></i>
-                  </div>
-                  <div class="flex-grow-1">
-                    <p class="mb-1 small">Unidad 005 en mantenimiento</p>
-                    <small class="text-muted">hace 1 hora</small>
+                    <p class="mb-1 small">{{ activity.message }}</p>
+                    <small class="text-muted">{{ activity.time }}</small>
                   </div>
                 </div>
               </div>
@@ -311,23 +448,24 @@ function handleHistory() {
             </h6>
           </div>
           <div class="card-body">
-            <div class="alert alert-warning alert-sm" role="alert">
-              <small>
-                <i class="bi bi-fuel-pump me-1"></i>
-                Unidad 003 necesita combustible
-              </small>
+            <div v-if="systemAlerts.length === 0" class="text-center py-3">
+              <div class="spinner-border spinner-border-sm text-warning" role="status">
+                <span class="visually-hidden">Verificando sistema...</span>
+              </div>
+              <p class="mt-2 mb-0 small text-muted">Verificando alertas...</p>
             </div>
-            <div class="alert alert-info alert-sm" role="alert">
-              <small>
-                <i class="bi bi-calendar-event me-1"></i>
-                Mantenimiento programado mañana
-              </small>
-            </div>
-            <div class="alert alert-success alert-sm mb-0" role="alert">
-              <small>
-                <i class="bi bi-check-circle me-1"></i>
-                Todos los sistemas operativos
-              </small>
+            <div v-else>
+              <div 
+                v-for="(alert, index) in systemAlerts" 
+                :key="index"
+                :class="[`alert alert-${alert.type} alert-sm`, { 'mb-0': index === systemAlerts.length - 1 }]"
+                role="alert"
+              >
+                <small>
+                  <i :class="alert.icon" class="me-1"></i>
+                  {{ alert.message }}
+                </small>
+              </div>
             </div>
           </div>
         </div>
@@ -418,6 +556,31 @@ function handleHistory() {
 [data-bs-theme="dark"] .btn-outline-secondary {
   color: var(--bs-secondary);
   border-color: var(--bs-secondary);
+}
+
+/* Botón dark específico - En modo oscuro debe ser blanco */
+[data-bs-theme="dark"] .btn-outline-dark {
+  color: #ffffff !important;
+  border-color: #ffffff !important;
+  background-color: transparent;
+}
+
+[data-bs-theme="dark"] .btn-outline-dark:hover {
+  background-color: #ffffff !important;
+  color: #000000 !important;
+  border-color: #ffffff !important;
+}
+
+/* Botón dark en modo claro - debe ser negro */
+.btn-outline-dark {
+  color: #000000;
+  border-color: #000000;
+}
+
+.btn-outline-dark:hover {
+  background-color: #000000;
+  color: #ffffff;
+  border-color: #000000;
 }
 
 /* Card footer en modo oscuro */

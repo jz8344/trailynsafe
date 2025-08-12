@@ -179,7 +179,6 @@ const canSubmit = computed(() => {
   return nuevoCorreo.value && validEmail.value && nuevoCorreo.value !== correoActual;
 });
 
-// --- Verificación periódica de sesión ---
 const conexionPerdida = ref(false);
 let sesionIntervalId = null;
 

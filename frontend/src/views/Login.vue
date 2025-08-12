@@ -117,6 +117,7 @@
       </div>
     </div>
   </section>
+
 </template>
 
 <script setup>
@@ -162,9 +163,12 @@ async function login() {
       
       success.value = 'Inicio de sesión exitoso. Redirigiendo...';
       
-      setTimeout(() => {
-        router.push('/');
-      }, 1000);
+      setTimeout(async () => {
+  localStorage.setItem('showWelcomeModal', '1');
+  console.debug('[Login] Flag showWelcomeModal seteado');
+  await router.push('/');
+  console.debug('[Login] Redirigido a Home');
+      }, 800);
     } else {
       error.value = 'Respuesta inesperada del servidor';
     }

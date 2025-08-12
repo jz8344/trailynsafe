@@ -7,7 +7,6 @@
     @showNotifications="handleNotifications"
     @showHistory="handleHistory"
   >
-    <!-- Formulario -->
     <div class="row mb-4">
       <div class="col">
         <div class="card shadow-sm border-0">
@@ -49,7 +48,6 @@
       </div>
     </div>
 
-    <!-- Tabla -->
     <div class="row">
       <div class="col">
         <div class="card shadow-sm border-0">

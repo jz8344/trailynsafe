@@ -1,6 +1,5 @@
 <template>
   <div class="admin-layout">
-    <!-- Navbar unificado -->
     <AdminNavbar 
       :page-title="pageTitle"
       :user-name="actualUserName"

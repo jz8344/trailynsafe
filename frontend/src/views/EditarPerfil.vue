@@ -168,7 +168,6 @@ const errors = reactive({
   telefono: ''
 });
 
-// --- Verificación periódica de sesión ---
 const conexionPerdida = ref(false);
 let sesionIntervalId = null;
 
