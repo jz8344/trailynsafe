@@ -169,26 +169,23 @@
                     </button>
                   </div>
                 </div>
-                <div v-else class="col-12">
-                  <label class="form-label">Nueva Contraseña (opcional)</label>
-                  <div class="input-group">
-                    <input 
-                      v-model="form.contrasena" 
-                      :type="showPwd ? 'text' : 'password'" 
-                      class="form-control" 
-                      placeholder="Dejar vacío para mantener la contraseña actual"
-                      minlength="6" 
-                    />
-                    <button 
-                      type="button" 
-                      class="btn btn-outline-secondary" 
-                      @click="showPwd = !showPwd"
-                    >
-                      <i :class="showPwd ? 'bi bi-eye-slash' : 'bi bi-eye'"></i>
-                    </button>
-                  </div>
-                  <div class="form-text">
-                    <small class="text-muted">Si deseas cambiar la contraseña, debe tener al menos 6 caracteres</small>
+                <div v-if="editando" class="col-12">
+                  <div class="card border-info">
+                    <div class="card-body text-center py-4">
+                      <i class="bi bi-key fs-1 text-info mb-3"></i>
+                      <h6 class="mb-2">Contraseña del Usuario</h6>
+                      <p class="text-muted small mb-3">
+                        La contraseña está protegida y encriptada
+                      </p>
+                      <button 
+                        type="button" 
+                        class="btn btn-outline-info"
+                        @click="abrirModalPassword"
+                      >
+                        <i class="bi bi-pencil-square me-2"></i>
+                        Cambiar Contraseña
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -198,6 +195,95 @@
               <button type="submit" class="btn btn-primary" :disabled="guardando">
                 <span v-if="guardando" class="spinner-border spinner-border-sm me-2"></span>
                 {{ guardando ? 'Guardando...' : 'Guardar' }}
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal para cambiar contraseña -->
+    <div v-if="mostrarModalPassword" class="modal d-block" tabindex="-1" style="background: rgba(0,0,0,0.5);">
+      <div class="modal-dialog modal-md">
+        <div class="modal-content">
+          <div class="modal-header bg-info bg-opacity-10">
+            <h5 class="modal-title">
+              <i class="bi bi-key me-2"></i>
+              Cambiar Contraseña de Usuario
+            </h5>
+            <button type="button" class="btn-close" @click="cerrarModalPassword"></button>
+          </div>
+          <form @submit.prevent="guardarPassword">
+            <div class="modal-body">
+              <div v-if="passwordError" class="alert alert-danger">{{ passwordError }}</div>
+              
+              <div class="text-center mb-4">
+                <div class="bg-info bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center" 
+                     style="width: 60px; height: 60px;">
+                  <i class="bi bi-person-fill fs-4 text-info"></i>
+                </div>
+                <h6 class="mt-2 mb-0">{{ usuarioPassword?.nombre }} {{ usuarioPassword?.apellidos }}</h6>
+                <small class="text-muted">{{ usuarioPassword?.correo }}</small>
+              </div>
+
+              <div class="row g-3">
+                <div class="col-12">
+                  <label class="form-label">Nueva Contraseña</label>
+                  <div class="input-group">
+                    <input 
+                      v-model="passwordForm.nueva_contrasena" 
+                      :type="showNewPwd ? 'text' : 'password'" 
+                      class="form-control" 
+                      placeholder="Mínimo 6 caracteres"
+                      minlength="6" 
+                      required
+                      autofocus
+                    />
+                    <button 
+                      type="button" 
+                      class="btn btn-outline-secondary" 
+                      @click="showNewPwd = !showNewPwd"
+                    >
+                      <i :class="showNewPwd ? 'bi bi-eye-slash' : 'bi bi-eye'"></i>
+                    </button>
+                  </div>
+                </div>
+                <div class="col-12">
+                  <label class="form-label">Confirmar Nueva Contraseña</label>
+                  <div class="input-group">
+                    <input 
+                      v-model="passwordForm.confirmar_contrasena" 
+                      :type="showConfirmPwd ? 'text' : 'password'" 
+                      class="form-control" 
+                      placeholder="Repetir contraseña"
+                      minlength="6" 
+                      required
+                    />
+                    <button 
+                      type="button" 
+                      class="btn btn-outline-secondary" 
+                      @click="showConfirmPwd = !showConfirmPwd"
+                    >
+                      <i :class="showConfirmPwd ? 'bi bi-eye-slash' : 'bi bi-eye'"></i>
+                    </button>
+                  </div>
+                </div>
+                <div class="col-12">
+                  <div class="form-text">
+                    <small class="text-muted">
+                      <i class="bi bi-info-circle me-1"></i>
+                      La contraseña debe tener al menos 6 caracteres y ambos campos deben coincidir.
+                    </small>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" @click="cerrarModalPassword">Cancelar</button>
+              <button type="submit" class="btn btn-info" :disabled="guardandoPassword">
+                <span v-if="guardandoPassword" class="spinner-border spinner-border-sm me-2"></span>
+                <i v-else class="bi bi-check-lg me-2"></i>
+                {{ guardandoPassword ? 'Actualizando...' : 'Actualizar Contraseña' }}
               </button>
             </div>
           </form>
@@ -223,9 +309,16 @@ const filtro = ref('')
 const rolFiltro = ref('')
 const seleccionados = ref([])
 const mostrarModal = ref(false)
+const mostrarModalPassword = ref(false)
 const editando = ref(false)
 const guardando = ref(false)
+const guardandoPassword = ref(false)
 const showPwd = ref(false)
+const showNewPwd = ref(false)
+const showConfirmPwd = ref(false)
+const cambiarPassword = ref(false)
+const passwordError = ref('')
+const usuarioPassword = ref(null)
 
 const form = ref({
   id: null,
@@ -234,6 +327,11 @@ const form = ref({
   correo: '',
   telefono: '',
   contrasena: ''
+})
+
+const passwordForm = ref({
+  nueva_contrasena: '',
+  confirmar_contrasena: ''
 })
 
 // Computed
@@ -253,6 +351,63 @@ const iniciales = (nombre, apellidos) => {
 
 const formatearFecha = (fecha) => {
   return fecha ? new Date(fecha).toLocaleDateString('es-MX') : ''
+}
+
+const abrirModalPassword = () => {
+  usuarioPassword.value = usuarios.value.find(u => u.id === form.value.id)
+  passwordForm.value = {
+    nueva_contrasena: '',
+    confirmar_contrasena: ''
+  }
+  passwordError.value = ''
+  showNewPwd.value = false
+  showConfirmPwd.value = false
+  mostrarModalPassword.value = true
+}
+
+const cerrarModalPassword = () => {
+  mostrarModalPassword.value = false
+  usuarioPassword.value = null
+}
+
+const validarPasswords = () => {
+  passwordError.value = ''
+  
+  if (!passwordForm.value.nueva_contrasena || passwordForm.value.nueva_contrasena.length < 6) {
+    passwordError.value = 'La nueva contraseña debe tener al menos 6 caracteres'
+    return false
+  }
+  
+  if (passwordForm.value.nueva_contrasena !== passwordForm.value.confirmar_contrasena) {
+    passwordError.value = 'Las contraseñas no coinciden'
+    return false
+  }
+  
+  return true
+}
+
+const guardarPassword = async () => {
+  if (!validarPasswords()) {
+    return
+  }
+  
+  guardandoPassword.value = true
+  passwordError.value = ''
+  
+  try {
+    await http.put(`/admin/usuarios/${usuarioPassword.value.id}`, {
+      contrasena: passwordForm.value.nueva_contrasena
+    })
+    
+    cerrarModalPassword()
+    // Mostrar mensaje de éxito (opcional)
+    console.log('Contraseña actualizada correctamente')
+  } catch (e) {
+    passwordError.value = e.response?.data?.error || 'Error actualizando contraseña'
+    console.error('Error:', e)
+  } finally {
+    guardandoPassword.value = false
+  }
 }
 
 const cargar = async () => {
@@ -303,6 +458,7 @@ const abrirModalEditar = (usuario) => {
     telefono: usuario.telefono,
     contrasena: ''
   }
+  showPwd.value = false
   mostrarModal.value = true
   error.value = null
 }
@@ -317,21 +473,16 @@ const guardar = async () => {
   
   try {
     if (editando.value) {
-      // Para edición, solo enviar los campos que pueden cambiar
+      // Para edición, solo enviar los campos que pueden cambiar (sin contraseña)
       const updateData = {
         nombre: form.value.nombre,
         apellidos: form.value.apellidos,
         telefono: form.value.telefono,
       }
       
-      // Solo incluir contraseña si se proporcionó una nueva
-      if (form.value.contrasena && form.value.contrasena.length >= 6) {
-        updateData.contrasena = form.value.contrasena
-      }
-      
       await http.put(`/admin/usuarios/${form.value.id}`, updateData)
     } else {
-      // Para creación, enviar todos los datos
+      // Para creación, enviar todos los datos incluyendo contraseña
       await http.post('/admin/usuarios', form.value)
     }
     await cargar()
@@ -381,7 +532,7 @@ onMounted(async () => {
 <style scoped>
 .user-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.308);
 }
 
 .user-card.border-primary {

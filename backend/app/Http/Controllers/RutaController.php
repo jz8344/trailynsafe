@@ -10,7 +10,7 @@ class RutaController extends Controller
 {
     public function index()
     {
-        return response()->json(Ruta::with(['chofer.usuario','unidad'])->orderByDesc('id')->get());
+        return response()->json(Ruta::with(['chofer','unidad'])->orderByDesc('id')->get());
     }
 
     public function store(Request $request)
@@ -27,7 +27,7 @@ class RutaController extends Controller
         ]);
         if ($validator->fails()) return response()->json($validator->errors(), 422);
         $ruta = Ruta::create(array_merge(['estado' => 'inactiva'], $validator->validated()));
-        return response()->json($ruta->load(['chofer.usuario','unidad']), 201);
+        return response()->json($ruta->load(['chofer','unidad']), 201);
     }
 
     public function update(Request $request, $id)
@@ -46,7 +46,7 @@ class RutaController extends Controller
         ]);
         if ($validator->fails()) return response()->json($validator->errors(), 422);
         $ruta->update($validator->validated());
-        return response()->json($ruta->fresh()->load(['chofer.usuario','unidad']));
+        return response()->json($ruta->fresh()->load(['chofer','unidad']));
     }
 
     public function destroy($id)

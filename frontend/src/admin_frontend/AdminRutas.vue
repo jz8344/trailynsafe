@@ -6,7 +6,7 @@
       <div class="col-md-2">
         <select v-model="form.chofer_id" class="form-select" required>
           <option value="" disabled>Chofer</option>
-          <option v-for="c in choferes" :key="c.id" :value="c.id">{{ c.usuario?.nombre }} {{ c.usuario?.apellidos }}</option>
+          <option v-for="c in choferes" :key="c.id" :value="c.id">{{ c.nombre }} {{ c.apellidos }}</option>
         </select>
       </div>
       <div class="col-md-2">
@@ -38,7 +38,7 @@
         <tr v-for="r in rutas" :key="r.id">
           <td>{{ r.id }}</td>
           <td>{{ r.nombre }}</td>
-          <td>{{ r.chofer?.usuario?.nombre }} {{ r.chofer?.usuario?.apellidos }}</td>
+          <td>{{ r.chofer?.nombre }} {{ r.chofer?.apellidos }}</td>
           <td>{{ r.unidad?.matricula }}</td>
           <td>{{ r.horario }}</td>
           <td>{{ r.inicio }}</td>
@@ -63,13 +63,21 @@ const choferes = ref([])
 const unidades = ref([])
 const form = reactive({id:null,nombre:'',chofer_id:'',unidad_id:'',horario:'',inicio:'',fin:'',rango:0,estado:'inactiva'})
 
-function headers(){ return {} }
+function headers(){ 
+  const token = localStorage.getItem('admin_token')
+  console.log('Token admin:', token ? 'Existe' : 'No existe')
+  return token ? { Authorization: `Bearer ${token}` } : {}
+}
 async function cargar(){
+  console.log('Cargando datos...')
   const [rRes,cRes,uRes] = await Promise.all([
     http.get('/admin/rutas',{headers:headers()}),
     http.get('/admin/choferes',{headers:headers()}),
     http.get('/admin/unidades',{headers:headers()}),
   ])
+  console.log('Rutas:', rRes.data)
+  console.log('Choferes:', cRes.data)
+  console.log('Unidades:', uRes.data)
   rutas.value = rRes.data
   choferes.value = cRes.data
   unidades.value = uRes.data
@@ -89,3 +97,15 @@ async function eliminar(id){ if(confirm('¿Eliminar?')){ await http.delete(`/adm
 
 onMounted(cargar)
 </script>
+
+<style scoped>
+/* Select options styles */
+.form-select option {
+  color: #000000 !important;
+  background-color: #ffffff !important;
+}
+
+.form-select option:disabled {
+  color: #6c757d !important;
+}
+</style>

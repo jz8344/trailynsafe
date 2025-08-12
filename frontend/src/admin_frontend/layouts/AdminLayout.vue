@@ -188,7 +188,8 @@ defineExpose({
 /* Layout principal */
 .admin-layout {
   min-height: 100vh;
-  background: #ffff;
+  background: var(--bs-body-bg);
+  color: var(--bs-body-color);
 }
 
 /* Main content con padding para el navbar fijo */
@@ -196,6 +197,7 @@ defineExpose({
   margin-top: 76px;
   min-height: calc(100vh - 76px);
   background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+  color: var(--bs-body-color);
 }
 
 /* Loading overlay */
@@ -207,15 +209,37 @@ defineExpose({
   height: 100vh;
   background: rgba(255, 255, 255, 0.9);
   z-index: 9999;
+  color: var(--bs-body-color);
 }
 
 /* Dark mode overrides */
+[data-bs-theme="dark"] .admin-layout {
+  background: var(--bs-dark);
+  color: var(--bs-light);
+}
+
 [data-bs-theme="dark"] .main-content {
   background: linear-gradient(135deg, rgba(52, 58, 64, 0.95) 0%, rgba(33, 37, 41, 0.95) 100%);
+  color: var(--bs-light);
 }
 
 [data-bs-theme="dark"] .loading-overlay {
   background: rgba(33, 37, 41, 0.9);
+  color: var(--bs-light);
+}
+
+[data-bs-theme="dark"] .text-muted {
+  color: rgba(255, 255, 255, 0.6) !important;
+}
+
+/* Page title colors */
+[data-bs-theme="dark"] h1, 
+[data-bs-theme="dark"] h2, 
+[data-bs-theme="dark"] h3, 
+[data-bs-theme="dark"] h4, 
+[data-bs-theme="dark"] h5, 
+[data-bs-theme="dark"] h6 {
+  color: var(--bs-light);
 }
 
 /* Responsive adjustments */

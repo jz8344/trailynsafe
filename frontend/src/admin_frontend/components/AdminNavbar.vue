@@ -14,9 +14,13 @@
       </button>
 
       <!-- Brand -->
-      <router-link to="/admin/dashboard" class="navbar-brand fw-bold text-decoration-none">
-        <i class="bi bi-shield-check me-2"></i>
-        TrailynSafe Admin
+      <router-link to="/admin/dashboard" class="navbar-brand fw-bold text-decoration-none d-flex align-items-center">
+        <img 
+          src="/img/logo.png" 
+          alt="TrailynSafe Admin" 
+          class="navbar-logo me-2"
+        />
+        <span class="brand-text">TrailynSafe Admin</span>
       </router-link>
 
       <!-- Breadcrumb -->
@@ -255,11 +259,11 @@ const apps = [
 const routeMap = {
   'dashboard': '/admin/dashboard',
   'bd': '/admin/dashboard',
-  'usuarios': '/admin/usuarios',
-  'hijos': '/admin/hijos',
-  'choferes': '/admin/choferes',
-  'rutas': '/admin/rutas',
-  'unidades': '/admin/unidades',
+  'usuarios': '/admin/app/usuarios',
+  'hijos': '/admin/app/hijos',
+  'choferes': '/admin/app/choferes',
+  'rutas': '/admin/app/rutas',
+  'unidades': '/admin/app/unidades',
   'estadisticas': '/admin/estadisticas',
   'ajustes': '/admin/configuracion',
 }
@@ -371,6 +375,32 @@ onMounted(() => {
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+  transition: all 0.3s ease;
+}
+
+.navbar-brand:hover {
+  transform: scale(1.05);
+}
+
+/* Logo styles */
+.navbar-logo {
+  height: 40px;
+  width: 40px;
+  object-fit: contain;
+  transition: all 0.3s ease;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+}
+
+.navbar-logo:hover {
+  transform: rotate(5deg) scale(1.1);
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+}
+
+.brand-text {
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 }
 
 /* Responsive adjustments */
@@ -380,6 +410,23 @@ onMounted(() => {
     right: 10px;
     left: 10px;
     width: auto;
+  }
+  
+  .navbar-logo {
+    height: 32px;
+    width: 32px;
+  }
+  
+  .brand-text {
+    font-size: 1.1rem;
+    display: none;
+  }
+}
+
+@media (max-width: 576px) {
+  .navbar-logo {
+    height: 28px;
+    width: 28px;
   }
 }
 </style>

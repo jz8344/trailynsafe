@@ -85,11 +85,11 @@ const cards = [
 const routeMap = {
   'dashboard': '/admin/dashboard',
   'bd': '/admin/dashboard',
-  'usuarios': '/admin/usuarios',
-  'hijos': '/admin/hijos',
-  'choferes': '/admin/choferes',
-  'rutas': '/admin/rutas',
-  'unidades': '/admin/unidades',
+  'usuarios': '/admin/app/usuarios',
+  'hijos': '/admin/app/hijos',
+  'choferes': '/admin/app/choferes',
+  'rutas': '/admin/app/rutas',
+  'unidades': '/admin/app/unidades',
   'estadisticas': '/admin/estadisticas',
   'ajustes': '/admin/configuracion',
 }
@@ -345,7 +345,14 @@ function handleHistory() {
 
 .card-hover:hover .btn {
   background-color: var(--bs-primary);
-  color: white;
+  color: white !important;
+  border-color: var(--bs-primary);
+}
+
+/* Dark mode specific hover effects */
+[data-bs-theme="dark"] .card-hover:hover .btn {
+  background-color: var(--bs-primary);
+  color: white !important;
   border-color: var(--bs-primary);
 }
 
@@ -355,14 +362,74 @@ function handleHistory() {
   font-size: 0.875rem;
 }
 
-/* Cards con gradiente sutil */
+/* Cards con gradiente sutil - Modo claro */
 .card {
   background: linear-gradient(145deg, #ffffff, #f8f9fa);
   border: 1px solid rgba(0,0,0,0.1);
+  color: var(--bs-body-color);
 }
 
+/* Cards en modo oscuro */
 [data-bs-theme="dark"] .card {
   background: linear-gradient(145deg, #2d3748, #1a202c);
+  border: 1px solid rgba(255,255,255,0.1);
+  color: var(--bs-body-color);
+}
+
+[data-bs-theme="dark"] .card-body {
+  color: var(--bs-body-color);
+}
+
+[data-bs-theme="dark"] .card-title {
+  color: var(--bs-body-color);
+}
+
+[data-bs-theme="dark"] .text-muted {
+  color: rgba(255,255,255,0.6) !important;
+}
+
+/* Botones en modo oscuro */
+[data-bs-theme="dark"] .btn-outline-primary {
+  color: var(--bs-primary);
+  border-color: var(--bs-primary);
+  background-color: transparent;
+}
+
+[data-bs-theme="dark"] .btn-outline-success {
+  color: var(--bs-success);
+  border-color: var(--bs-success);
+}
+
+[data-bs-theme="dark"] .btn-outline-warning {
+  color: var(--bs-warning);
+  border-color: var(--bs-warning);
+}
+
+[data-bs-theme="dark"] .btn-outline-danger {
+  color: var(--bs-danger);
+  border-color: var(--bs-danger);
+}
+
+[data-bs-theme="dark"] .btn-outline-info {
+  color: var(--bs-info);
+  border-color: var(--bs-info);
+}
+
+[data-bs-theme="dark"] .btn-outline-secondary {
+  color: var(--bs-secondary);
+  border-color: var(--bs-secondary);
+}
+
+/* Card footer en modo oscuro */
+[data-bs-theme="dark"] .card-footer {
+  background-color: transparent;
+  border-color: rgba(255,255,255,0.1);
+}
+
+/* Background para modo oscuro */
+[data-bs-theme="dark"] .bg-light {
+  background-color: var(--bs-dark) !important;
+  color: var(--bs-light);
 }
 
 /* Animaciones suaves */

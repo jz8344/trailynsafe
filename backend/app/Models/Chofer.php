@@ -12,14 +12,25 @@ class Chofer extends Model
     protected $table = 'choferes';
 
     protected $fillable = [
-        'usuario_id',
-        'licencia',
+        'nombre',
+        'apellidos',
+        'numero_licencia',
+        'curp',
+        'telefono',
+        'correo',
+        'estado',
     ];
 
-    public function usuario()
-    {
-        return $this->belongsTo(Usuario::class, 'usuario_id');
-    }
+    protected $casts = [
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
+    ];
+
+    // Eliminamos la relación con usuario ya que ahora es independiente
+    // public function usuario()
+    // {
+    //     return $this->belongsTo(Usuario::class, 'usuario_id');
+    // }
 
     public function rutas()
     {

@@ -13,8 +13,20 @@ class Unidad extends Model
 
     protected $fillable = [
         'matricula',
+        'descripcion',
+        'marca',
         'modelo',
+        'anio',
+        'color',
+        'imagen',
+        'estado',
+        'numero_serie',
         'capacidad',
+    ];
+
+    protected $casts = [
+        'anio' => 'integer',
+        'capacidad' => 'integer',
     ];
 
     public function rutas()

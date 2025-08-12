@@ -63,6 +63,7 @@ Route::middleware(['auth:admin-sanctum'])->group(function () {
     Route::get('/admin/unidades', [UnidadController::class, 'index']);
     Route::post('/admin/unidades', [UnidadController::class, 'store']);
     Route::put('/admin/unidades/{id}', [UnidadController::class, 'update']);
+    Route::post('/admin/unidades/{id}', [UnidadController::class, 'update']); // Para FormData
     Route::delete('/admin/unidades/{id}', [UnidadController::class, 'destroy']);
     // CRUD Rutas
     Route::get('/admin/rutas', [RutaController::class, 'index']);
