@@ -355,6 +355,30 @@ async function handleLogout() {
   }
 }
 
+// Lifecycle
+onMounted(async () => {
+  // Inicializar Bootstrap dropdowns
+  setTimeout(() => {
+    try {
+      import('bootstrap').then(({ Dropdown, Tooltip }) => {
+        // Inicializar todos los dropdowns
+        const dropdownElements = document.querySelectorAll('[data-bs-toggle="dropdown"]')
+        dropdownElements.forEach(el => {
+          new Dropdown(el)
+        })
+        
+        // Inicializar tooltips
+        const tooltipElements = document.querySelectorAll('[title]')
+        tooltipElements.forEach(el => {
+          new Tooltip(el)
+        })
+      })
+    } catch (error) {
+      console.warn('Error inicializando Bootstrap:', error)
+    }
+  }, 100)
+})
+
 // Watchers
 watch(() => props.items, () => {
   // Limpiar selecciones cuando cambian los items

@@ -28,7 +28,41 @@
         <!-- Right side: Sort and Column controls -->
         <div class="d-flex gap-2">
           <!-- Sort Dropdown -->
-    
+          <div class="dropdown">
+            <button 
+              class="btn btn-outline-secondary dropdown-toggle" 
+              type="button" 
+              data-bs-toggle="dropdown"
+            >
+              <i class="bi bi-sort-down me-1"></i>
+              Ordenar
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end">
+              <li class="dropdown-header">Ordenar por</li>
+              <li v-for="field in config.displayFields.filter(f => f.sortable !== false)" :key="field.key">
+                <a 
+                  class="dropdown-item" 
+                  href="#" 
+                  :class="{ 'active-sort': sortField === field.key && sortDirection === 'asc' }"
+                  @click.prevent="requestSort(field.key, 'asc')"
+                >
+                  <i class="bi bi-sort-alpha-down me-2"></i>
+                  {{ field.label }} (A-Z)
+                </a>
+              </li>
+              <li v-for="field in config.displayFields.filter(f => f.sortable !== false)" :key="field.key + '_desc'">
+                <a 
+                  class="dropdown-item" 
+                  href="#" 
+                  :class="{ 'active-sort': sortField === field.key && sortDirection === 'desc' }"
+                  @click.prevent="requestSort(field.key, 'desc')"
+                >
+                  <i class="bi bi-sort-alpha-up me-2"></i>
+                  {{ field.label }} (Z-A)
+                </a>
+              </li>
+            </ul>
+          </div>
 
           <!-- Column Visibility Dropdown (only for list view) -->
           <div v-if="viewMode === 'list'" class="dropdown">
@@ -446,12 +480,50 @@ function handleImageError(event) {
 // Lifecycle
 onMounted(() => {
   initializeColumns()
+  
+  // Inicializar Bootstrap dropdowns
+  setTimeout(() => {
+    try {
+      // Importar Bootstrap de forma dinámica para asegurar que esté disponible
+      import('bootstrap').then(({ Dropdown, Tooltip }) => {
+        // Inicializar dropdowns
+        const dropdownElements = document.querySelectorAll('[data-bs-toggle="dropdown"]')
+        dropdownElements.forEach(el => {
+          new Dropdown(el)
+        })
+        
+        // Inicializar tooltips si los hay
+        const tooltipElements = document.querySelectorAll('[title]')
+        tooltipElements.forEach(el => {
+          new Tooltip(el)
+        })
+      })
+    } catch (error) {
+      console.warn('Error inicializando Bootstrap:', error)
+    }
+  }, 100)
 })
 
 // Watch para reinicializar columnas cuando cambie la configuración
 watch(() => props.config, () => {
   initializeColumns()
 }, { deep: true })
+
+// Watch para reinicializar Bootstrap cuando cambie el modo de vista
+watch(() => viewMode.value, () => {
+  setTimeout(() => {
+    try {
+      import('bootstrap').then(({ Dropdown }) => {
+        const dropdownElements = document.querySelectorAll('[data-bs-toggle="dropdown"]')
+        dropdownElements.forEach(el => {
+          new Dropdown(el)
+        })
+      })
+    } catch (error) {
+      console.warn('Error reinicializando Bootstrap:', error)
+    }
+  }, 100)
+})
 </script>
 
 <style scoped>
