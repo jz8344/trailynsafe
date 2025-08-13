@@ -233,10 +233,11 @@ const cards = [
   {
     key: 'bd',
     title: 'Base de datos',
-    description: 'Gestión y consulta de datos',
+    description: 'Respaldos y gestión de MongoDB',
     icon: 'bi-database-fill',
     color: 'primary',
     img: 'https://raw.githubusercontent.com/odoo/odoo/18.0/addons/sale/static/description/icon.png',
+    badge: 'DB',
   },
   {
     key: 'usuarios',
@@ -287,18 +288,28 @@ const cards = [
     color: 'dark',
     img: '/src/assets/icons/estadisticas.png',
   },
+  {
+    key: 'respaldos',
+    title: 'Respaldos',
+    description: 'Gestión de backup MongoDB',
+    icon: 'bi-shield-check',
+    color: 'primary',
+    img: '/src/assets/icons/backup.png',
+    badge: 'DB',
+  },
 ]
 
  
 const routeMap = {
   'dashboard': '/admin/dashboard',
-  'bd': '/admin/dashboard',
+  'bd': '/admin/app/respaldos',
   'usuarios': '/admin/app/usuarios',
   'hijos': '/admin/app/hijos',
   'choferes': '/admin/app/choferes',
   'rutas': '/admin/app/rutas',
   'unidades': '/admin/app/unidades',
   'estadisticas': '/admin/estadisticas',
+  'respaldos': '/admin/app/respaldos',
   'ajustes': '/admin/configuracion',
 }
 

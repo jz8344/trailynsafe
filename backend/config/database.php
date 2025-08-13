@@ -43,7 +43,7 @@ return [
             'search_path' => 'public',
             'sslmode' => 'prefer',
         ],
-        
+
         'mongodb' => [
             'driver' => 'mongodb',
             'dsn' => env('MONGO_DSN'), 
@@ -55,6 +55,11 @@ return [
             'options' => [
                 'database' => env('MONGO_AUTH_DB', 'admin'), // auth DB
                 'ssl' => env('MONGO_SSL', true),
+                'tlsAllowInvalidCertificates' => true,
+                'tlsAllowInvalidHostnames' => true,
+                'serverSelectionTimeoutMS' => 30000,
+                'connectTimeoutMS' => 10000,
+                'socketTimeoutMS' => 300000,
             ],
         ],
 

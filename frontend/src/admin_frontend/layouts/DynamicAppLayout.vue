@@ -79,41 +79,6 @@
                       </button>
                     </div>
                   </div>
-                  <!-- Sort dropdown -->
-                  <div class="col-auto">
-                    <div class="dropdown">
-                      <button 
-                        class="btn btn-outline-secondary dropdown-toggle" 
-                        type="button" 
-                        data-bs-toggle="dropdown"
-                      >
-                        <i class="bi bi-sort-down me-2"></i>
-                        Ordenar
-                      </button>
-                      <ul class="dropdown-menu dropdown-menu-end">
-                        <li v-for="field in appConfig.sortFields" :key="field.key">
-                          <a 
-                            class="dropdown-item" 
-                            href="#" 
-                            @click.prevent="setSortField(field.key, 'asc')"
-                          >
-                            <i class="bi bi-sort-alpha-down me-2"></i>
-                            {{ field.label }} (A-Z)
-                          </a>
-                        </li>
-                        <li v-for="field in appConfig.sortFields" :key="field.key + '_desc'">
-                          <a 
-                            class="dropdown-item" 
-                            href="#" 
-                            @click.prevent="setSortField(field.key, 'desc')"
-                          >
-                            <i class="bi bi-sort-alpha-up me-2"></i>
-                            {{ field.label }} (Z-A)
-                          </a>
-                        </li>
-                      </ul>
-                    </div>
-                  </div>
                 </div>
               </div>
             </div>

@@ -503,6 +503,88 @@ export const appConfigs = {
         ]
       }
     ]
+  },
+
+  respaldos: {
+    name: 'Respaldos',
+    singular: 'Respaldo',
+    description: 'Gestiona los respaldos de la base de datos MongoDB',
+    icon: 'bi bi-shield-check',
+    searchFields: ['filename'],
+    sortFields: [
+      { key: 'filename', label: 'Archivo' },
+      { key: 'created_at', label: 'Fecha de Creación' },
+      { key: 'size_bytes', label: 'Tamaño' }
+    ],
+    displayFields: [
+      { 
+        key: 'filename', 
+        label: 'Archivo',
+        type: 'code',
+        icon: 'bi bi-file-earmark-zip',
+        sortable: true
+      },
+      { key: 'size', label: 'Tamaño', type: 'badge', icon: 'bi bi-hdd', sortable: true },
+      { 
+        key: 'created_at', 
+        label: 'Fecha de Creación',
+        type: 'date',
+        icon: 'bi bi-calendar',
+        sortable: true
+      },
+      { 
+        key: 'created_human', 
+        label: 'Antigüedad',
+        icon: 'bi bi-clock',
+        sortable: false
+      },
+      {
+        key: 'actions',
+        label: 'Acciones',
+        type: 'custom',
+        sortable: false,
+        customComponent: 'BackupActions'
+      }
+    ],
+    // API endpoint personalizado para respaldos
+    apiEndpoint: '/admin/backups',
+    // Configuración especial para respaldos
+    isBackupApp: true,
+    canCreate: true,
+    canEdit: false,
+    canDelete: true,
+    canView: false,
+    customActions: [
+      {
+        name: 'create_backup',
+        label: 'Crear Respaldo',
+        icon: 'bi bi-plus-circle',
+        type: 'primary',
+        handler: 'createBackup'
+      },
+      {
+        name: 'cleanup_old',
+        label: 'Limpiar Antiguos',
+        icon: 'bi bi-trash',
+        type: 'warning',
+        handler: 'cleanupOld'
+      },
+      {
+        name: 'schedule_backup',
+        label: 'Programar Respaldos',
+        icon: 'bi bi-clock',
+        type: 'info',
+        handler: 'scheduleBackup'
+      }
+    ],
+    // Configuración de programación de respaldos
+    scheduleConfig: {
+      enabled: false,
+      frequency: 'daily',
+      time: '02:00',
+      retention_days: 30,
+      cleanup_enabled: true
+    }
   }
 }
 

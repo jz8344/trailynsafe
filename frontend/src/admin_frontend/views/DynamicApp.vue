@@ -1,5 +1,10 @@
 <template>
+  <!-- Componente especializado para respaldos -->
+  <BackupApp v-if="appName === 'respaldos'" />
+  
+  <!-- Componente dinámico estándar para otras apps -->
   <DynamicAppLayout
+    v-else
     :app-config="config"
     :items="items"
     :loading="loading"
@@ -50,6 +55,7 @@ import { ref, onMounted, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import DynamicAppLayout from '../layouts/DynamicAppLayout.vue'
 import DynamicListView from '../components/DynamicListView.vue'
+import BackupApp from './BackupApp.vue'
 import { useDynamicApp } from '@/composables/useDynamicApp.js'
 import { useAdminAuth } from '@/composables/useAdminAuth.js'
 
@@ -69,7 +75,7 @@ const { adminName, setupAxiosInterceptors } = useAdminAuth()
 const appName = computed(() => props.app || route.params.app)
 
 // Validar que la app existe
-const validApps = ['usuarios', 'hijos', 'choferes', 'unidades', 'rutas']
+const validApps = ['usuarios', 'hijos', 'choferes', 'unidades', 'rutas', 'respaldos']
 if (!validApps.includes(appName.value)) {
   router.push('/admin/dashboard')
 }

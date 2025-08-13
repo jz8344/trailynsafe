@@ -9,7 +9,6 @@
           Trailyn Safe es una solución innovadora que integra tecnologías avanzadas como IoT, GPS, sensores inteligentes y cámaras de vigilancia para garantizar la seguridad de los estudiantes durante el traslado escolar.
         </p>
         <div class="buttons">
-          <button class="btn btn-primary">Ver video</button>
         </div>
       </div>
     </section>

@@ -132,6 +132,12 @@ const routes = [
      meta: { middleware: [adminAuth] }
    },
    {
+     path: '/admin/backups',
+     name: 'AdminBackups',
+     component: () => import('@/admin_frontend/views/BackupManagement.vue'),
+     meta: { middleware: [adminAuth] }
+   },
+   {
      path: '/admin/app/:app',
      name: 'DynamicApp',
      component: () => import('@/admin_frontend/views/DynamicApp.vue'),

@@ -82,4 +82,12 @@ Route::middleware(['auth:admin-sanctum'])->group(function () {
     Route::post('/admin/sesiones/cerrar-actual', [SessionController::class, 'destroyCurrent']);
     Route::delete('/admin/sesiones/{id}', [SessionController::class, 'destroy']);
     Route::delete('/admin/sesiones', [SessionController::class, 'destroyAll']);
+    
+    // Backup Management
+    Route::get('/admin/backups', [\App\Http\Controllers\Admin\BackupController::class, 'index']);
+    Route::post('/admin/backups', [\App\Http\Controllers\Admin\BackupController::class, 'create']);
+    Route::get('/admin/backups/{filename}/download', [\App\Http\Controllers\Admin\BackupController::class, 'download']);
+    Route::delete('/admin/backups/{filename}', [\App\Http\Controllers\Admin\BackupController::class, 'delete']);
+    Route::post('/admin/backups/cleanup', [\App\Http\Controllers\Admin\BackupController::class, 'cleanup']);
+    Route::get('/admin/backups/status', [\App\Http\Controllers\Admin\BackupController::class, 'status']);
 });

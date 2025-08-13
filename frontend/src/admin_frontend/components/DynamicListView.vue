@@ -36,10 +36,13 @@
             >
               <i class="bi bi-sort-down me-1"></i>
               Ordenar
+              <span v-if="sortField" class="badge bg-primary ms-1">
+                {{ sortableFields.find(f => f.key === sortField)?.label || config.displayFields?.find(f => f.key === sortField)?.label }}
+              </span>
             </button>
             <ul class="dropdown-menu dropdown-menu-end">
               <li class="dropdown-header">Ordenar por</li>
-              <li v-for="field in config.displayFields.filter(f => f.sortable !== false)" :key="field.key">
+              <li v-for="field in sortableFields" :key="field.key">
                 <a 
                   class="dropdown-item" 
                   href="#" 
@@ -50,7 +53,7 @@
                   {{ field.label }} (A-Z)
                 </a>
               </li>
-              <li v-for="field in config.displayFields.filter(f => f.sortable !== false)" :key="field.key + '_desc'">
+              <li v-for="field in sortableFields" :key="field.key + '_desc'">
                 <a 
                   class="dropdown-item" 
                   href="#" 
@@ -59,6 +62,17 @@
                 >
                   <i class="bi bi-sort-alpha-up me-2"></i>
                   {{ field.label }} (Z-A)
+                </a>
+              </li>
+              <li v-if="sortField"><hr class="dropdown-divider"></li>
+              <li v-if="sortField">
+                <a 
+                  class="dropdown-item text-muted" 
+                  href="#" 
+                  @click.prevent="requestSort('', '')"
+                >
+                  <i class="bi bi-arrow-clockwise me-2"></i>
+                  Limpiar ordenamiento
                 </a>
               </li>
             </ul>
@@ -76,7 +90,7 @@
             </button>
             <ul class="dropdown-menu dropdown-menu-end p-2" style="min-width: 200px;">
               <li class="dropdown-header">Mostrar/Ocultar Columnas</li>
-              <li v-for="field in config.displayFields" :key="field.key" class="dropdown-item-text">
+              <li v-for="field in config.displayFields || []" :key="field.key" class="dropdown-item-text">
                 <div class="form-check">
                   <input 
                     class="form-check-input" 
@@ -119,7 +133,7 @@
           style="cursor: pointer; transition: all 0.3s ease;"
         >
           <!-- Imagen de la unidad si existe -->
-          <div v-if="config.displayFields[0]?.type === 'image' && getDisplayValue(item, config.displayFields[0])" class="card-img-top-container">
+          <div v-if="config.displayFields?.[0]?.type === 'image' && getDisplayValue(item, config.displayFields[0])" class="card-img-top-container">
             <img 
               :src="`http://localhost:8000/${getDisplayValue(item, config.displayFields[0])}`"
               :alt="item.matricula || 'Imagen'"
@@ -131,7 +145,7 @@
           <div class="card-body">
             <div class="d-flex justify-content-between align-items-start mb-2">
               <!-- Avatar con iniciales o imagen pequeña -->
-              <div v-if="config.displayFields[0]?.type !== 'image'" class="item-avatar-letters">
+              <div v-if="config.displayFields?.[0]?.type !== 'image'" class="item-avatar-letters">
                 {{ getInitials(item, getNameField()) }}
               </div>
               <div v-else class="item-avatar-letters bg-light">
@@ -148,7 +162,7 @@
               </div>
             </div>
             
-            <h6 class="card-title mb-2">{{ getDisplayValue(item, config.displayFields[1] || config.displayFields[0]) }}</h6>
+            <h6 class="card-title mb-2">{{ getDisplayValue(item, config.displayFields?.[1] || config.displayFields?.[0]) }}</h6>
             
             <div class="item-details">
               <div 
@@ -294,8 +308,11 @@
             </tr>
             <tr v-if="items.length === 0">
               <td :colspan="visibleDisplayFields.length + 2" class="text-center text-muted py-4">
-                <i :class="config.icon" class="me-2"></i>
-                No hay {{ config.name.toLowerCase() }} registrados
+                <div class="d-flex flex-column align-items-center">
+                  <i class="bi bi-inbox display-1 text-muted mb-3"></i>
+                  <h5 class="text-muted">No hay {{ config.name?.toLowerCase() || 'elementos' }} para mostrar</h5>
+                  <p class="text-muted mb-0">Agrega el primer {{ config.singular?.toLowerCase() || 'elemento' }} haciendo clic en el botón "Crear Respaldo"</p>
+                </div>
               </td>
             </tr>
           </tbody>
@@ -347,11 +364,20 @@ const someSelected = computed(() => {
 })
 
 const visibleDisplayFields = computed(() => {
+  if (!props.config || !props.config.displayFields) return []
   return props.config.displayFields.filter(field => visibleColumns.value[field.key] !== false)
+})
+
+const sortableFields = computed(() => {
+  if (!props.config) return []
+  // Usar sortFields si existe, o filtrar displayFields que son ordenables
+  return props.config.sortFields || props.config.displayFields?.filter(f => f.sortable !== false) || []
 })
 
 // Métodos
 function initializeColumns() {
+  if (!props.config || !props.config.displayFields) return
+  
   const columns = {}
   props.config.displayFields.forEach(field => {
     columns[field.key] = true
@@ -365,6 +391,8 @@ function resetColumns() {
 
 function getNameField() {
   // Buscar el primer campo que sea de tipo nombre o que contenga 'nombre'
+  if (!props.config || !props.config.displayFields) return null
+  
   return props.config.displayFields.find(field => 
     field.type === 'avatar' || 
     field.key.includes('nombre') || 
@@ -457,11 +485,19 @@ function deleteItem(id) {
 }
 
 function requestSort(field, direction = null) {
+  if (!field) {
+    // Limpiar ordenamiento
+    emit('sort', { field: '', direction: '' })
+    return
+  }
+  
   const newDirection = direction || (props.sortField === field && props.sortDirection === 'asc' ? 'desc' : 'asc')
   emit('sort', { field, direction: newDirection })
 }
 
 function getCardDisplayFields(item) {
+  if (!props.config || !props.config.displayFields) return []
+  
   // Para las tarjetas, si el primer campo es una imagen, mostramos los siguientes campos
   const startIndex = props.config.displayFields[0]?.type === 'image' ? 2 : 1
   return props.config.displayFields.slice(startIndex, startIndex + 3)
@@ -479,7 +515,7 @@ function handleImageError(event) {
 
 // Lifecycle
 onMounted(() => {
-  initializeColumns()
+  // initializeColumns() se llamará en el watcher cuando config esté disponible
   
   // Inicializar Bootstrap dropdowns
   setTimeout(() => {
@@ -505,9 +541,11 @@ onMounted(() => {
 })
 
 // Watch para reinicializar columnas cuando cambie la configuración
-watch(() => props.config, () => {
-  initializeColumns()
-}, { deep: true })
+watch(() => props.config, (newConfig) => {
+  if (newConfig && newConfig.displayFields) {
+    initializeColumns()
+  }
+}, { deep: true, immediate: true })
 
 // Watch para reinicializar Bootstrap cuando cambie el modo de vista
 watch(() => viewMode.value, () => {

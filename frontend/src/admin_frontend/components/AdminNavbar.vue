@@ -117,6 +117,11 @@
               </router-link>
             </li>
             <li>
+              <router-link to="/admin/backups" class="dropdown-item">
+                <i class="bi bi-shield-check me-2"></i>Respaldos
+              </router-link>
+            </li>
+            <li>
               <a href="#" @click.prevent="showHistory" class="dropdown-item">
                 <i class="bi bi-clock-history me-2"></i>Historial
               </a>
@@ -128,6 +133,17 @@
               </button>
             </li>
           </ul>
+        </div>
+        <!-- Botón extra para cerrar sesión -->
+        <div class="nav-item ms-2">
+          <button 
+            @click="logout" 
+            class="btn btn-danger d-flex align-items-center"
+            title="Cerrar sesión"
+          >
+            <i class="bi bi-box-arrow-right me-2"></i>
+            <span class="d-none d-md-inline">Cerrar sesión</span>
+          </button>
         </div>
       </div>
     </div>
@@ -208,6 +224,7 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
+import api from '../../config/api'
 
 // Props
 const props = defineProps({
@@ -301,8 +318,22 @@ function showHistory() {
   emit('showHistory')
 }
 
-function logout() {
-  emit('logout')
+async function logout() {
+  try {
+    // Consumir API de logout admin
+    await api.post('/admin/logout')
+  } catch (error) {
+    // Ignorar error, igual limpiar y redirigir
+  }
+  // Limpiar todos los posibles datos de sesión y tokens
+  localStorage.removeItem('adminToken')
+  localStorage.removeItem('token')
+  localStorage.removeItem('user')
+  localStorage.removeItem('adminUser')
+  localStorage.removeItem('admin')
+  sessionStorage.clear()
+  localStorage.clear()
+  router.push('/admin/login')
 }
 
 // Lifecycle
@@ -314,23 +345,24 @@ onMounted(() => {
   // Bootstrap tooltips and dropdowns initialization con delay
   setTimeout(() => {
     try {
-      // Inicializar tooltips
-      const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-      tooltipTriggerList.map(function (tooltipTriggerEl) {
-        if (typeof window !== 'undefined' && window.bootstrap && window.bootstrap.Tooltip) {
-          return new window.bootstrap.Tooltip(tooltipTriggerEl)
-        }
-      })
+      // Importar Bootstrap dinámicamente
+      import('bootstrap').then(({ Dropdown, Tooltip }) => {
+        // Inicializar tooltips
+        const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+        tooltipTriggerList.forEach(tooltipTriggerEl => {
+          new Tooltip(tooltipTriggerEl)
+        })
 
-      // Inicializar dropdowns manualmente
-      const dropdownElements = document.querySelectorAll('[data-bs-toggle="dropdown"]')
-      dropdownElements.forEach(element => {
-        if (typeof window !== 'undefined' && window.bootstrap && window.bootstrap.Dropdown) {
-          new window.bootstrap.Dropdown(element)
-        }
+        // Inicializar dropdowns manualmente
+        const dropdownElements = document.querySelectorAll('[data-bs-toggle="dropdown"]')
+        dropdownElements.forEach(element => {
+          new Dropdown(element)
+        })
+      }).catch(error => {
+        console.warn('Error importando Bootstrap:', error)
       })
     } catch (error) {
-      console.warn('Bootstrap components not available:', error)
+      console.warn('Error inicializando Bootstrap:', error)
     }
   }, 100)
 
